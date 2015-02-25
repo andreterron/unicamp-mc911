@@ -1,7 +1,6 @@
 /* Flex Definitions */
 
-WHITESPACE [ \t\n\r]+
-ANY       .
+ANY .
 
 %%
 
@@ -23,5 +22,7 @@ ANY       .
 "\\cite"                  {return T_CITE}      
 "\\bibitem"               {return T_BIB_ITEM}  
 
-WHITESPACE                {return T_WHITESPACE}
-ANY                       {return T_CHAR}
+ANY {
+		yylval.str = (char *) strdup(yytext);
+		return T_CHAR
+	}
