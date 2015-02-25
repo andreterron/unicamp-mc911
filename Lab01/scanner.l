@@ -1,11 +1,16 @@
 /* Flex Definitions */
 
 %{
-
-    #include "parser.h"
+/* C code to be copied verbatim */
+#include <stdio.h>
+#include "parser.h"
 
 %}
 
+DOCUMENT_CLASS \\documentclass\[.*\]\{.*\}
+USE_PACKAGE    \\usepackage(\[.*\])?\{.*\}
+AUTHOR         \\author\{.*\}
+WHITESPACE     [ \n\r\t]+
 ANY .
 
 /* Token rules */
@@ -28,10 +33,15 @@ ANY .
 "\\cite"                    ;//{return T_CITE;}
 "\\bibitem"                 ;//{return T_BIB_ITEM;}
 
-"\\documentclass"           ;//{return T_DOCUMENT_CLASS;}
-"\\usepackage"              ;//{return T_USE_PACKAGE;}
-"\\author"                  ;//{return T_AUTHOR;} 
+{DOCUMENT_CLASS}            ;//{return T_DOCUMENT_CLASS;}
+{USE_PACKAGE}               ;//{return T_USE_PACKAGE;}
+{AUTHOR}                    ;//{return T_AUTHOR;}
 
+
+WHITESPACE  {
+		yylval.str = (char *) strdup(yytext);
+		return T_WHITESPACE;
+	}
 ANY {
 		yylval.str = (char *) strdup(yytext);
 		return T_CHAR;

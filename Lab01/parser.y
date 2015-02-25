@@ -12,7 +12,6 @@ char *concat(int count, ...);
 
 %union{
 	char *str;
-	int  *intval;
 }
 
 
@@ -33,28 +32,29 @@ char *concat(int count, ...);
 %token T_CITE      
 %token T_BIB_ITEM  
 
-%token T_DOCUMENT_CLASS
-%token T_USE_PACKAGE 
-%token T_AUTHOR
+//%token T_DOCUMENT_CLASS
+//%token T_USE_PACKAGE 
+//%token T_AUTHOR
 
-%token <str> T_CHAR
-%type  <str> file text
+%token <str> T_CHAR T_WHITESPACE
+%type  <str> text text2 whitespace word
+
 %%
-
-
 
 /* Grammar rules */
 
-//text: T_CHAR;
+text		: word text2;
 
-//file: text {
-//};
+text2		: /* empty */			{ $$ = ""; }
+			| whitespace word text2 { $$ = concat(3, $1, $2, $3); }
+			;
 
-//text: /* empty */ | T_CHAR {$$ = $1;};
+whitespace	: T_WHITESPACE	{ $$ = $1; }
+			;
 
-text: /* empty */ | T_CHAR text {
-	$$ = concat(2, $1, $2);
-};
+word		: /* empty */ { $$ = ""; }
+			| T_CHAR word { $$ = concat(2, $1, $2); }
+			;
 
 
 %%
@@ -92,12 +92,24 @@ int yyerror(const char* errmsg)
 }
  
 int yywrap(void) { return 1; }
- 
+
+void printFile(char *fileName) {
+	int c;
+	FILE *file;
+	file = fopen(fileName, "r");
+	if (file) {
+		while ((c = getc(file)) != EOF)
+			putchar(c);
+		fclose(file);
+	}
+}
+
 int main(int argc, char** argv)
 {
-	 printf("<!DOCTYPE html>\n");
-	 printf("<html>\n\t<head>\n\t</head>\n\t<body>\n");
+	 printFile("header.html");
+	 putchar('\n');
      yyparse();
-	 printf("\t</body>\n</html>\n");
+	 printFile("footer.html");
+	 putchar('\n');
      return 0;
 }

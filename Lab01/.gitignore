@@ -5,3 +5,4 @@ scanner.o
 scanner.h
 scanner.c
 parser
+out.html
