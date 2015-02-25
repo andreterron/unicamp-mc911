@@ -2,9 +2,9 @@
 
 ANY .
 
+/* Token rules */
 %%
 
-/* Token rules */
 "\\begin{document}"         {return T_BEGIN_DOC}  
 "\\begin{itemize}"          {return BEGIN_ITEM 
 "\\begin{thebibliography}"  {return T_BEGIN_BIB}
@@ -30,3 +30,5 @@ ANY {
 		yylval.str = (char *) strdup(yytext);
 		return T_CHAR
 	}
+
+%%
