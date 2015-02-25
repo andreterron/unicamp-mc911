@@ -15,12 +15,39 @@ char *concat(int count, ...);
 	int  *intval;
 }
 
+
+%token T_BEGIN_DOC  
+%token T_BEGIN_ITEM 
+%token T_BEGIN_BIB
+
+%token T_END_DOC  
+%token T_END_ITEM 
+%token T_END_BIB  
+
+%token T_MAKETITLE 
+%token T_TITLE
+%token T_BOLD
+%token T_ITALIC    
+%token T_ITEM      
+%token T_GRAPHIC   
+%token T_CITE      
+%token T_BIB_ITEM  
+
+%token T_DOCUMENT_CLASS
+%token T_USE_PACKAGE 
+%token T_AUTHOR
+
+%token T_EOF
+
 %token <str> T_CHAR
 %type  <str> file text
 %%
 
 
+
 /* Grammar rules */
+
+//text: T_CHAR;
 
 file: text {
 	printf("<!DOCTYPE html>\n");
