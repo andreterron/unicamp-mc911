@@ -23,4 +23,5 @@ ANY       .
 "\\cite"                  {return T_CITE}      
 "\\bibitem"               {return T_BIB_ITEM}  
 
-ANY {return T_CHAR}
+WHITESPACE                {return T_WHITESPACE}
+ANY                       {return T_CHAR}
