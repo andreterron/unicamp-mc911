@@ -22,6 +22,10 @@ ANY .
 "\\cite"                  {return T_CITE}      
 "\\bibitem"               {return T_BIB_ITEM}  
 
+"\\documentclass"         {return T_DOCUMENT_CLASS}
+"\\usepackage"         	  {return T_USE_PACKAGE} 
+"\\author"         	  {return T_AUTHOR} 
+
 ANY {
 		yylval.str = (char *) strdup(yytext);
 		return T_CHAR
