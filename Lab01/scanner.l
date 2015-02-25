@@ -1,12 +1,16 @@
 /* Flex Definitions */
 
+%{
+#include "parser.h"
+%}
+
 ANY .
 
 /* Token rules */
 %%
 
 "\\begin{document}"         {return T_BEGIN_DOC}  
-"\\begin{itemize}"          {return BEGIN_ITEM 
+"\\begin{itemize}"          {return BEGIN_ITEM} 
 "\\begin{thebibliography}"  {return T_BEGIN_BIB}
 
 "\\end{document}"         {return T_END_DOC}  
@@ -30,5 +34,3 @@ ANY {
 		yylval.str = (char *) strdup(yytext);
 		return T_CHAR
 	}
-
-%%
