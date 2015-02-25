@@ -37,8 +37,6 @@ char *concat(int count, ...);
 %token T_USE_PACKAGE 
 %token T_AUTHOR
 
-%token T_EOF
-
 %token <str> T_CHAR
 %type  <str> file text
 %%
@@ -49,14 +47,12 @@ char *concat(int count, ...);
 
 //text: T_CHAR;
 
-file: text {
-	printf("<!DOCTYPE html>\n");
-	printf("<html>\n\t<head>\n\t</head>\n\t<body>\n");
-	printf("%s", $1);
-	printf("\t</body>\n</html>\n");
-};
+//file: text {
+//};
 
-text: T_CHAR {$$ = $1;} | T_CHAR text {
+//text: /* empty */ | T_CHAR {$$ = $1;};
+
+text: /* empty */ | T_CHAR text {
 	$$ = concat(2, $1, $2);
 };
 
@@ -99,6 +95,9 @@ int yywrap(void) { return 1; }
  
 int main(int argc, char** argv)
 {
+	 printf("<!DOCTYPE html>\n");
+	 printf("<html>\n\t<head>\n\t</head>\n\t<body>\n");
      yyparse();
+	 printf("\t</body>\n</html>\n");
      return 0;
 }

@@ -32,10 +32,6 @@ ANY .
 "\\usepackage"              ;//{return T_USE_PACKAGE;}
 "\\author"                  ;//{return T_AUTHOR;} 
 
-<<EOF>> {
-	return T_EOF;
-}
-
 ANY {
 		yylval.str = (char *) strdup(yytext);
 		return T_CHAR;
