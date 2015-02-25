@@ -15,7 +15,8 @@ char *concat(int count, ...);
 	int  *intval;
 }
 
-
+%token <str> T_CHAR
+%type  <str> file text
 %%
 
 
@@ -28,7 +29,9 @@ file: text {
 	printf("\t</body>\n</html>\n");
 };
 
-text: T_CHAR text;
+text: T_CHAR {$$ = $1;} | T_CHAR text {
+	$$ = concat(2, $1, $2);
+};
 
 
 %%
