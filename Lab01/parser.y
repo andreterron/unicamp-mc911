@@ -40,7 +40,7 @@ int debug = 0;
 //%token T_AUTHOR
 
 %token <str> T_CHAR T_WHITESPACE
-%type  <str> text whitespace word char element graphic file command skip_blank header title body
+%type  <str> text whitespace word char element graphic file command skip_blank header title body bold
 
 %%
 
@@ -68,9 +68,6 @@ ft2			//: 			{ $$ = ""; }
 
 */
 
-//bold		: T_BOLD '{' text '}'	{ $$ = concat(3, "<b>", $3, "</b>");}
-//			;
-
 //file		: skip_blank element { $$ = concat(2, $1, $2); }
 //			| file skip_blank element { $$ = concat(3, $1, $2, $3); }
 //			;
@@ -86,13 +83,13 @@ file		: header skip_blank T_BEGIN_DOC skip_blank body skip_blank T_END_DOC skip_
 
 
 			
-header		: skip_blank title { $$ = $1; debugResult("header", $1);}
+header		: skip_blank title			{ $$ = $1; debugResult("header", $1);}
 			;
 
-title		: T_TITLE '{' text '}' { $$ = $3; debugResult("title", $3); }
+title		: T_TITLE '{' text '}'		{ $$ = $3; debugResult("title", $3); }
 			;
 
-body		: element 		{ $$ = $1;}
+body		: element 					{ $$ = $1;}
 			| body skip_blank element	{ $$ = concat(3, $1, $2, $3);}
 			;
 			
@@ -103,48 +100,49 @@ body		: element 		{ $$ = $1;}
 //			| skip_blank element body2	{ $$ = concat(3, $1, $2, $3);}
 //			;
 			
-element		: word { $$ = $1; debugResult("word", $1);}
-			| command { $$ = $1; }
+element		: word						{ $$ = $1; debugResult("word", $1);}
+			| command					{ $$ = $1; }
 			;
 
 
-command		: graphic { $$ = $1; debugResult("command graphic", $1);}
-			//bold					{ $$ = $1; debugResult("command", $$); }
-			//;
-			|'{' text '}'			{ $$ = concat(3, "{", $2, "}"); debugResult("command", $$); }
-//			;
+command		: graphic					{ $$ = $1; debugResult("command graphic", $1);}
+			| bold						{ $$ = $1; debugResult("command bold", $1); }
+			| '{' text '}'				{ $$ = concat(3, "{", $2, "}"); debugResult("command", $$); }
 			;
 
-graphic		: T_GRAPHIC '{' text '}'		{ $$ = concat(3, "<img src=\"", $3, "\"/>"); }
+graphic		: T_GRAPHIC '{' text '}'	{ $$ = concat(3, "<img src=\"", $3, "\"/>"); }
+			;
+
+bold		: T_BOLD '{' text '}'		{ $$ = concat(3, "<b>", $3, "</b>");}
 			;
 
 text		: word
-			| text whitespace word	{ $$ = concat(3, $1, $2, $3); debugResult("text", $$);}
-			;
-			
-/*text		: word text2			{ $$ = concat(2, $1, $2); debugResult("text", $$);}
+			| text whitespace word		{ $$ = concat(3, $1, $2, $3); debugResult("text", $$);}
 			;
 
-text2		: /* empty 			{ $$ = ""; debugResult("text2", $$); }
-			| whitespace word text2 { $$ = concat(3, $1, $2, $3); debugResult("text2", $$); }
+/*text		: word text2				{ $$ = concat(2, $1, $2); debugResult("text", $$);}
+			;
+
+text2		: /* empty 					{ $$ = ""; debugResult("text2", $$); }
+			| whitespace word text2 	{ $$ = concat(3, $1, $2, $3); debugResult("text2", $$); }
 			;*/
 			
-skip_blank	: /* empty */			{ $$ = ""; debugResult("skip_blank", "");}
-			| whitespace skip_blank			{ $$ = concat(2, $1, $2); debugResult("skip_blank", $$);}
+skip_blank	: /* empty */				{ $$ = ""; debugResult("skip_blank", "");}
+			| whitespace skip_blank		{ $$ = concat(2, $1, $2); debugResult("skip_blank", $$);}
 			;
 
-whitespace	: T_WHITESPACE			{ $$ = $1; }
+whitespace	: T_WHITESPACE				{ $$ = $1; }
 			;
 
 word		: char
-			| word char			{ $$ = concat(2, $1, $2); }
+			| word char					{ $$ = concat(2, $1, $2); }
 			;
 			
 char		: T_CHAR
 			;
 
-//word2		: /* empty */			{ $$ = ""; }
-//			| T_CHAR word2			{ $$ = concat(2, $1, $2); }
+//word2		: /* empty */				{ $$ = ""; }
+//			| T_CHAR word2				{ $$ = concat(2, $1, $2); }
 //			;
 
 

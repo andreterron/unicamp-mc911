@@ -26,7 +26,7 @@ ANY .
 
 "\\maketitle"               ;//{debugToken("maketitle");}
 "\\title"                   {return T_TITLE;}
-"\\textbf"                  ;//{debugToken("BOLD"); return T_BOLD;}
+"\\textbf"                  {debugToken("BOLD"); return T_BOLD;}
 "\\textit"                  ;//{return T_ITALIC;}
 "\\item"                    ;//{return T_ITEM;}
 "\\includegraphics"         {return T_GRAPHIC;}
