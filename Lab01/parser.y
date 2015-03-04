@@ -44,45 +44,15 @@ int debug = 0;
 
 %%
 
-//skip_blank command free_text ft2 file element command
-
 /* Grammar rules */
 
-//file		: text skip_blank file2			{ $$ = concat(3, $1, $2, $3); }
-//			//| command skip_blank file2		{ $$ = concat(3, $1, $2, $3); }
-//			;
-
-//file2		: /* empty */			{ $$ = ""; }
-//			| command skip_blank file2 { $$ = concat(2, $1, $2); }
-//			| text skip_blank file2 { $$ = concat(2, $1, $2); }
-//			;
-
-/*free_text	: free_text ft2		{ $$ = concat(2, $1, $2); }
-			| ft2			{ $$ = $1; }
-			;
-
-ft2			//: 			{ $$ = ""; }
-			: skip_blank text		{ $$ = concat(2, $1, $2); debugResult("ft2 text", $$); }
-			| skip_blank command		{ $$ = concat(2, $1, $2); debugResult("ft2 cmd", $$); }
-			;
-
-*/
-
-//file		: skip_blank element { $$ = concat(2, $1, $2); }
-//			| file skip_blank element { $$ = concat(3, $1, $2, $3); }
-//			;
-
-//file		: element			{ $$ = $1; }
-//			| file element		{ $$ = $1; }
-//			;
-
 file		: header skip_blank T_BEGIN_DOC skip_blank body skip_blank T_END_DOC skip_blank {
-		printf("%s\n", $5);
-	}
+					printf("%s\n", $5);
+				}
 			;
 
 
-			
+
 header		: skip_blank title			{ $$ = $1; debugResult("header", $1);}
 			;
 
@@ -92,14 +62,8 @@ title		: T_TITLE '{' text '}'		{ $$ = $3; debugResult("title", $3); }
 body		: element 					{ $$ = $1;}
 			| body skip_blank element	{ $$ = concat(3, $1, $2, $3);}
 			;
-			
-//body		: element body2				{ $$ = concat(2, $1, $2);}
-//			;
-			
-//body2		: /* empty */				{ $$ = ""; }
-//			| skip_blank element body2	{ $$ = concat(3, $1, $2, $3);}
-//			;
-			
+
+
 element		: word						{ $$ = $1; debugResult("word", $1);}
 			| command					{ $$ = $1; }
 			;
@@ -126,7 +90,7 @@ text		: word
 text2		: /* empty 					{ $$ = ""; debugResult("text2", $$); }
 			| whitespace word text2 	{ $$ = concat(3, $1, $2, $3); debugResult("text2", $$); }
 			;*/
-			
+
 skip_blank	: /* empty */				{ $$ = ""; debugResult("skip_blank", "");}
 			| whitespace skip_blank		{ $$ = concat(2, $1, $2); debugResult("skip_blank", $$);}
 			;
@@ -137,13 +101,9 @@ whitespace	: T_WHITESPACE				{ $$ = $1; }
 word		: char
 			| word char					{ $$ = concat(2, $1, $2); }
 			;
-			
+
 char		: T_CHAR
 			;
-
-//word2		: /* empty */				{ $$ = ""; }
-//			| T_CHAR word2				{ $$ = concat(2, $1, $2); }
-//			;
 
 
 
