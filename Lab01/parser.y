@@ -5,6 +5,9 @@
 #include <stdlib.h>
 
 char *concat(int count, ...);
+void debugResult(const char* type, const char* result);
+
+int debug = 0;
 
 %}
 
@@ -37,24 +40,113 @@ char *concat(int count, ...);
 //%token T_AUTHOR
 
 %token <str> T_CHAR T_WHITESPACE
-%type  <str> text text2 whitespace word
+%type  <str> text whitespace word char element graphic file command skip_blank header title body
 
 %%
 
+//skip_blank command free_text ft2 file element command
+
 /* Grammar rules */
 
-text		: word text2;
+//file		: text skip_blank file2			{ $$ = concat(3, $1, $2, $3); }
+//			//| command skip_blank file2		{ $$ = concat(3, $1, $2, $3); }
+//			;
 
-text2		: /* empty */			{ $$ = ""; }
-			| whitespace word text2 { $$ = concat(3, $1, $2, $3); }
+//file2		: /* empty */			{ $$ = ""; }
+//			| command skip_blank file2 { $$ = concat(2, $1, $2); }
+//			| text skip_blank file2 { $$ = concat(2, $1, $2); }
+//			;
+
+/*free_text	: free_text ft2		{ $$ = concat(2, $1, $2); }
+			| ft2			{ $$ = $1; }
 			;
 
-whitespace	: T_WHITESPACE	{ $$ = $1; }
+ft2			//: 			{ $$ = ""; }
+			: skip_blank text		{ $$ = concat(2, $1, $2); debugResult("ft2 text", $$); }
+			| skip_blank command		{ $$ = concat(2, $1, $2); debugResult("ft2 cmd", $$); }
 			;
 
-word		: /* empty */ { $$ = ""; }
-			| T_CHAR word { $$ = concat(2, $1, $2); }
+*/
+
+//bold		: T_BOLD '{' text '}'	{ $$ = concat(3, "<b>", $3, "</b>");}
+//			;
+
+//file		: skip_blank element { $$ = concat(2, $1, $2); }
+//			| file skip_blank element { $$ = concat(3, $1, $2, $3); }
+//			;
+
+//file		: element			{ $$ = $1; }
+//			| file element		{ $$ = $1; }
+//			;
+
+file		: header skip_blank T_BEGIN_DOC skip_blank body skip_blank T_END_DOC skip_blank {
+		printf("%s\n", $5);
+	}
 			;
+
+
+			
+header		: skip_blank title { $$ = $1; debugResult("header", $1);}
+			;
+
+title		: T_TITLE '{' text '}' { $$ = $3; debugResult("title", $3); }
+			;
+
+body		: element 		{ $$ = $1;}
+			| body skip_blank element	{ $$ = concat(3, $1, $2, $3);}
+			;
+			
+//body		: element body2				{ $$ = concat(2, $1, $2);}
+//			;
+			
+//body2		: /* empty */				{ $$ = ""; }
+//			| skip_blank element body2	{ $$ = concat(3, $1, $2, $3);}
+//			;
+			
+element		: word { $$ = $1; debugResult("word", $1);}
+			| command { $$ = $1; }
+			;
+
+
+command		: graphic { $$ = $1; debugResult("command graphic", $1);}
+			//bold					{ $$ = $1; debugResult("command", $$); }
+			//;
+			|'{' text '}'			{ $$ = concat(3, "{", $2, "}"); debugResult("command", $$); }
+//			;
+			;
+
+graphic		: T_GRAPHIC '{' text '}'		{ $$ = concat(3, "<img src=\"", $3, "\"/>"); }
+			;
+
+text		: word
+			| text whitespace word	{ $$ = concat(3, $1, $2, $3); debugResult("text", $$);}
+			;
+			
+/*text		: word text2			{ $$ = concat(2, $1, $2); debugResult("text", $$);}
+			;
+
+text2		: /* empty 			{ $$ = ""; debugResult("text2", $$); }
+			| whitespace word text2 { $$ = concat(3, $1, $2, $3); debugResult("text2", $$); }
+			;*/
+			
+skip_blank	: /* empty */			{ $$ = ""; debugResult("skip_blank", "");}
+			| whitespace skip_blank			{ $$ = concat(2, $1, $2); debugResult("skip_blank", $$);}
+			;
+
+whitespace	: T_WHITESPACE			{ $$ = $1; }
+			;
+
+word		: char
+			| word char			{ $$ = concat(2, $1, $2); }
+			;
+			
+char		: T_CHAR
+			;
+
+//word2		: /* empty */			{ $$ = ""; }
+//			| T_CHAR word2			{ $$ = concat(2, $1, $2); }
+//			;
+
 
 
 %%
@@ -85,6 +177,16 @@ char* concat(int count, ...)
     return result;
 }
 
+void debugResult(const char* type, const char* result) {
+	if (debug)
+		printf("\nMATCH: %s (%s);\n", type, result);
+}
+
+void debugToken(const char* token) {
+	if (debug)
+		printf("\nTOKEN FOUND: %s;\n", token);
+}
+
 
 int yyerror(const char* errmsg)
 {
@@ -104,12 +206,12 @@ void printFile(char *fileName) {
 	}
 }
 
-int main(int argc, char** argv)
+int parseMain(int argc, char** argv)
 {
-	 printFile("header.html");
-	 putchar('\n');
-     yyparse();
-	 printFile("footer.html");
-	 putchar('\n');
-     return 0;
+	printFile("header.html");
+	putchar('\n');
+	yyparse();
+	printFile("footer.html");
+	putchar('\n');
+	return 0;
 }
