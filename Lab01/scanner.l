@@ -10,8 +10,13 @@
 DOCUMENT_CLASS \\documentclass(\[.*\])?\{.*\}
 USE_PACKAGE    \\usepackage(\[.*\])?\{.*\}
 AUTHOR         \\author\{.*\}
-WHITESPACE     [ \n\r\t]+
+WHITESPACE     ([ \n\r\t])([ \r\t]+[ \n\r\t])*
+BREAK          \n\n
 ANY .
+
+/*** Inclui break pra quebrar linha... Olhei como o tex funcionava, ele so quebra com dois \n
+nos outros casos considera como espaco... Tive que editar o whitespace pra eliminar o caso de \n\n 
+de ser identificado nele, de resto continua normal ***/
 
 /* Token rules */
 %%
@@ -24,10 +29,10 @@ ANY .
 "\\end{itemize}"            ;//{return T_END_ITEM;}
 "\\end{thebibliography}"    ;//{return T_END_BIB;}
 
-"\\maketitle"               ;//{debugToken("maketitle");}
+"\\maketitle"               {return T_MAKETITLE;};//{debugToken("maketitle");}
 "\\title"                   {return T_TITLE;}
 "\\textbf"                  {debugToken("BOLD"); return T_BOLD;}
-"\\textit"                  ;//{return T_ITALIC;}
+"\\textit"                  {debugToken("ITALIC"); return T_ITALIC;}
 "\\item"                    ;//{return T_ITEM;}
 "\\includegraphics"         {return T_GRAPHIC;}
 "\\cite"                    ;//{return T_CITE;}
@@ -48,6 +53,10 @@ ANY .
 {ANY} {
 		yylval.str = (char *) strdup(yytext);
 		return T_CHAR;
+	}
+{BREAK} {
+		yylval.str = (char *) strdup(yytext);
+		return T_BREAK;
 	}
 %%
 
