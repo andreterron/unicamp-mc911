@@ -51,6 +51,8 @@ sem nao faz nada.
 
 Tentei adaptar o seu printFile do header e footer pra um *readFile* e ficar mais bonitinho, mas nao consegui haha 
 se quiser tentar pra deixar mais organizado, mas nao eh necessario, funciona feio  assim hehe
+
+Ele salva num arquivo teste.html o codigo agora
 ***/
 file		: header skip_blank T_BEGIN_DOC skip_blank body skip_blank T_END_DOC skip_blank {
 				   // Sem maketitle
