@@ -4,6 +4,27 @@
 		<script type="text/javascript"
 		src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 		</script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script type="text/javascript" >
+		$(function() {
+			$('a.cite').each(function(i, elem) {
+				var id = '#' + $(elem).attr("data-ref")
+				$(elem).text('[' + $(id).attr('data-id') + ']');
+				$(elem).attr('href', id);
+			});
+		});
+		</script>
+		<style>
+			a {
+				color: black;
+				text-decoration: none;
+			}
+
+			a:hover {
+				color: blue;
+				text-decoration: underline;
+			}
+		</style>
 		<script type="text/x-mathjax-config">
 			MathJax.Hub.Config({
 			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
