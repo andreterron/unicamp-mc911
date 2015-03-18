@@ -9,7 +9,6 @@
 
 DOCUMENT_CLASS	\\documentclass(\[.*\])?\{.*\}
 USE_PACKAGE		\\usepackage(\[.*\])?\{.*\}
-AUTHOR			\\author\{.*\}
 BREAK			\n\n
 WHITESPACE		([ \n\r\t])([ \r\t]+[ \n\r\t])*
 ANY .
@@ -26,8 +25,10 @@ ANY .
 "\\end{itemize}"            {return T_END_ITEM;}
 "\\end{thebibliography}"    {return T_END_BIB;}
 
-"\\maketitle"               {return T_MAKETITLE;}
+"\\author"                  {return T_AUTHOR;}
 "\\title"                   {return T_TITLE;}
+
+"\\maketitle"               {return T_MAKETITLE;}
 "\\textbf"                  {return T_BOLD;}
 "\\textit"                  {return T_ITALIC;}
 "\\item"                    {return T_ITEM;}
@@ -37,14 +38,16 @@ ANY .
 
 {DOCUMENT_CLASS}            ;
 {USE_PACKAGE}               ;
-{AUTHOR}                    ;
-
 
 "["							{return '['; }
 "]"							{return ']'; }
 "{"							{return '{'; }
 "}"							{return '}'; }
 
+{BREAK} {
+		yylval.str = (char *) strdup(yytext);
+		return T_BREAK;
+	}
 {WHITESPACE}  {
 		yylval.str = (char *) strdup(yytext);
 		return T_WHITESPACE;
@@ -52,10 +55,6 @@ ANY .
 {ANY} {
 		yylval.str = (char *) strdup(yytext);
 		return T_CHAR;
-	}
-{BREAK} {
-		yylval.str = (char *) strdup(yytext);
-		return T_BREAK;
 	}
 %%
 

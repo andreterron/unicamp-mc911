@@ -13,6 +13,7 @@ int fileOutput = 0;
 FILE *output;
 int bib_id = 0;
 char *savedTitle = NULL;
+char *savedAuthor = NULL;
 
 %}
 
@@ -23,26 +24,26 @@ char *savedTitle = NULL;
 }
 
 
-%token T_BEGIN_DOC  
-%token T_BEGIN_ITEM 
+%token T_BEGIN_DOC
+%token T_BEGIN_ITEM
 %token T_BEGIN_BIB
 
-%token T_END_DOC  
-%token T_END_ITEM 
-%token T_END_BIB  
+%token T_END_DOC
+%token T_END_ITEM
+%token T_END_BIB
 
-%token T_MAKETITLE 
+%token T_MAKETITLE
 %token T_TITLE
 %token T_BOLD
-%token T_ITALIC    
-%token T_ITEM      
-%token T_GRAPHIC   
-%token T_CITE      
-%token T_BIB_ITEM  
+%token T_ITALIC
+%token T_ITEM
+%token T_GRAPHIC
+%token T_CITE
+%token T_BIB_ITEM
+%token T_AUTHOR
 
 //%token T_DOCUMENT_CLASS
-//%token T_USE_PACKAGE 
-//%token T_AUTHOR
+//%token T_USE_PACKAGE
 
 %token <str> T_CHAR T_WHITESPACE T_BREAK
 %type  <str> text whitespace word char graphic file command skip_blank whitespaces body bold italic maketitle item items list text2 trim_text bib bib_item bib_items cite
@@ -70,10 +71,18 @@ file		: skip_blank header T_BEGIN_DOC skip_blank body T_END_DOC skip_blank {
 
 /* Header */
 
-header		: title skip_blank				{ debugResult("header", "");}
+header		: header_cmd skip_blank			{ debugResult("header", ""); }
+			| header header_cmd skip_blank	{ debugResult("header", ""); }
+			;
+
+header_cmd	: title
+			| author
 			;
 
 title		: T_TITLE '{' trim_text '}'		{ savedTitle = strdup($3); debugResult("title", $3);}//   }
+			;
+
+author		: T_AUTHOR '{' trim_text '}'	{ savedAuthor = strdup($3); debugResult("author", $3);}
 			;
 
 /* Body */
@@ -98,7 +107,7 @@ command		: maketitle						{ $$ = $1; }
 cite		: T_CITE '{' trim_text '}'  	{ $$ = concat(3, "<a class=\"cite\" data-ref=\"", $3, "\"></a>"); }
 			;
 
-bib			: T_BEGIN_BIB skip_blank bib_items T_END_BIB { $$ = concat(3, "<h1>References</h1><ol start=\"0\">", $3, "</ol>"); debugResult("bib", $3); }
+bib			: T_BEGIN_BIB skip_blank bib_items T_END_BIB { $$ = concat(3, "<h2>References</h2><ol start=\"0\">", $3, "</ol>"); debugResult("bib", $3); }
 			;
 
 bib_items	: bib_item						{ $$ = $1; }
@@ -112,7 +121,7 @@ bib_item	: T_BIB_ITEM '{' trim_text '}' trim_text		{
 				}
 			;
 
-maketitle	: T_MAKETITLE					{ $$ = concat(3, "<h1 align=\"center\">", savedTitle, "</h1>"); debugResult("maketitle", savedTitle);}
+maketitle	: T_MAKETITLE					{ $$ = concat(5, "<h1 align=\"center\">", savedTitle, "</h1><h4 class=\"author\">", savedAuthor, "</h4>"); debugResult("maketitle", savedTitle);}
 			;
 
 list		: T_BEGIN_ITEM whitespaces items T_END_ITEM { $$ = concat(3, "<ul>", $3, "</ul></li>"); debugResult("list", $3); }
