@@ -1,25 +1,17 @@
-<!DOCTYPE
-html>
+<!DOCTYPE html>
 <html>
-<head>
-<script
-type="text/javascript"
-src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<script
-type="text/x-mathjax-config">
-MathJax.Hub.Config({
-tex2jax:
-{inlineMath:
-[['$','$'],
-['\\(','\\)']]}
-});
-</script>
-</head>
-<body>
-<h1 align="center">Sistemas de recomendacoes</h1>
-<p align="justify">
-<b>Introducao</b><BR>
+	<head>
+		<script type="text/javascript"
+		src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+		</script>
+		<script type="text/x-mathjax-config">
+			MathJax.Hub.Config({
+			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
+	</head>
+	<body><p align="justify"><h1 align="center">Sistemas de recomendacoes</h1><BR>
+ <b>Introducao</b><BR>
 O objetivo deste relatorio e descrever os assuntos estudados durante a  disciplina de MC032 no segundo semestre de 2010. O principal interesse deste trabalho foi pesquisar na literatura sobre o problema de sistemas de recomendacoes e diferentes abordagens para resolve-lo.  Na secao 2 e descrito em linhas gerais o que e um sistema de recomendacoes.  Nas secoes 3 e 4 sao mostradas as principais ideias encontradas nos trabalhos  , respectivamente.  Na secao 5 encontra-se a conclusao do estudo e ideias para trabalhos futuros.<BR>
 <b>Sistemas de recomendacoes</b><BR>
 Um sistema de recomendacoes tem como objetivo recomendar a usuarios produtos que o agradem. Para isso, o sistema de recomedacoes se baseia inicialmente em respostas ja conhecidas de outros usuarios e alguma informacao sobre o usuario que deseja obter uma recomendacao.  O conjunto de informacao inicial que o sistema de recomendacoes ja possui e utilizado para comparar com a informacao obtida do usuario em questao para tentar deduzir quais outros produtos interessam ao usuario. <BR>
@@ -33,7 +25,7 @@ Um bom algoritmo de recomendacoes deve dar boas recomendacoes utilizando o minim
 Um algoritmo e $f-competitivo$ $para$ $utilidade$ se faz boas recomendacoes a $fm$ usuarios, onde $m$ e o numero de usuarios. <BR>
 <i>Notacao</i><BR>
 Nesta secao, a seguinte notacao sera utilizada:<BR>
- [A] matriz de recomendacao original [Aij] valor da utilidade do produto j para o usuario i [A(i)] i-esima linha da matriz A, que corresponde ao vetor de utilidades do i-esimo usuario. [A(i)] i-esima coluna a matriz A, que corresponde a  utilidade de um produto para todos os usuarios. [Ak] Melhor aproximacao com posto k de A, obtida atraves da tecnica de SVD. [air] valor da utilidade do r-esimo produto com maior utilidade para o usuario i  <BR>
+  matriz de recomendacao original  valor da utilidade do produto j para o usuario i  i-esima linha da matriz A, que corresponde ao vetor de utilidades do i-esimo usuario.  i-esima coluna a matriz A, que corresponde a  utilidade de um produto para todos os usuarios.  Melhor aproximacao com posto k de A, obtida atraves da tecnica de SVD.  valor da utilidade do r-esimo produto com maior utilidade para o usuario i  <BR>
 <i>Reconstrucao de matrizes</i><BR>
 <i>Escolha das linhas</i><BR>
 A escolha de um numero constante de linhas segue a ideia de que sao necessarios alguns usuarios respondendo um questionario sobre todos os produtos para que os outros usuarios sejam classificados a partir das respostas destes. Na pratica, empresas pagam pessoas para o preenchimento desses formularios.<BR>
@@ -45,5 +37,5 @@ Primeiramente separa-se os casos em que o usuario faz parte do comite e quando o
 <b>Conclusao e trabalhos futuros</b><BR>
 Atraves deste estudo, verificou-se a existencia de solucoes com abordagens totalmente diferentes para o problema de sistemas de recomendacoes. Mas o mais importante foi o aprendizado das tecnicas mais gerais para resolucao de problemas como por exemplo SVD.  Potenciais trabalhos futuros sao a implementacao e comparacao dos algoritmos na pratica ou alteracao neles para que ao inves de dispor de informacoes de colunas inteiras, os algoritmos funcionem com posicoes esparsas na matriz. <BR>
   {Boney96} Boney, L., Tewfik, A.H., and Hamdy, K.N., Digital  Watermarks for Audio Signals, Proceedings of the Third IEEE International Conference on Multimedia, pp. 473-480, June 1996. {MG} Goossens, M., Mittelbach, F., Samarin, A LaTeX Companion, Addison-Wesley, Reading, MA, 1994. {HK} Kopka, H., Daly P.W., A Guide to LaTeX, Addison-Wesley, Reading, MA, 1999. {Pan} Pan, D., A Tutorial on MPEG/Audio Compression, IEEE Multimedia, Vol.2, pp.60-74, Summer 1998.
-</p></body>
+</p>	</body>
 </html>

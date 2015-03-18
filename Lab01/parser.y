@@ -6,8 +6,10 @@
 
 char *concat(int count, ...);
 void debugResult(const char* type, const char* result);
+void fPrintFile(char *fileName, FILE *output);
 
 int debug = 0;
+char *savedTitle = NULL;
 
 %}
 
@@ -40,7 +42,9 @@ int debug = 0;
 //%token T_AUTHOR
 
 %token <str> T_CHAR T_WHITESPACE T_BREAK
-%type  <str> text whitespace word char element graphic file command skip_blank header title body bold italic
+%type  <str> text whitespace word char element graphic file command skip_blank whitespaces body bold italic maketitle
+%start file
+//content item items list 
 
 %%
 
@@ -54,92 +58,33 @@ se quiser tentar pra deixar mais organizado, mas nao eh necessario, funciona fei
 
 Ele salva num arquivo teste.html o codigo agora
 ***/
-file		: header skip_blank T_BEGIN_DOC skip_blank body skip_blank T_END_DOC skip_blank {
+file		: skip_blank header T_BEGIN_DOC skip_blank body skip_blank T_END_DOC skip_blank {
 				   // Sem maketitle
                FILE *T = fopen("teste.html", "w");
-               FILE *H = fopen("header.html", "r");
-               FILE *F = fopen("footer.html", "r");
-               char header[1000], footer[1000], linha[1000];
-               strcpy(header, "");
-               strcpy(footer, "");
 
-               // Le header 
-               fscanf(H, "%s", header);
-               strcat(header, "\n"); 
-					while(fscanf(H,"%s",linha) == 1)  
-               {  
-                  strcat(header, linha);
-                  strcat(header, "\n"); 
-               }
-              
-               // Le footer                
-               fscanf(F, "%s", footer);
-               strcat(footer, "\n"); 
-					while(fscanf(F,"%s",linha) == 1)  
-               {  
-                  strcat(footer, linha);
-                  strcat(footer, "\n"); 
-               }
+				fPrintFile("header.html", T);
                
                // Salva no arquivo html
 /*** Meti esse alinhamento justificado pra ficar igual o tex ***/
-					fprintf(T, "%s\n<p align=\"justify\">%s\n</p>%s", header, $5, footer);
+				fprintf(T, "<p align=\"justify\">%s\n</p>", $5);
 					
-					fclose(T);
-					fclose(H);
-					fclose(F);
+				fPrintFile("footer.html", T);
+				fclose(T);
 /***	Antiga impressao direta no terminal				printf("%s\n", $1, $5); ***/
-				} |
-				header skip_blank T_BEGIN_DOC skip_blank T_MAKETITLE skip_blank body skip_blank T_END_DOC skip_blank {
-				   // Com maketitle
-               FILE *T = fopen("teste.html", "w");
-               FILE *H = fopen("header.html", "r");
-               FILE *F = fopen("footer.html", "r");
-               char header[1000], footer[1000], linha[1000];
-               strcpy(header, "");
-               strcpy(footer, "");
-
-               // Le header 
-               fscanf(H, "%s", header);
-               strcat(header, "\n"); 
-					while(fscanf(H,"%s",linha) == 1)  
-               {  
-                  strcat(header, linha);
-                  strcat(header, "\n"); 
-               }
-              
-               // Le footer                
-               fscanf(F, "%s", footer);
-               strcat(footer, "\n"); 
-					while(fscanf(F,"%s",linha) == 1)  
-               {  
-                  strcat(footer, linha);
-                  strcat(footer, "\n"); 
-               }
-               
-               // Salva no arquivo html]
-/*** Meti esse alinhamento justificado pra ficar igual o tex ***/
-					fprintf(T, "%s%s\n<p align=\"justify\">\n%s\n</p>%s", header, $1, $7, footer);
-					
-					fclose(T);
-					fclose(H);
-					fclose(F);
-/***	Antiga impressao direta no terminal				printf("%s\n%s\n", $1, $5); ***/
-				}
-			;
+				};
 
 /* Header */
 
-header		: skip_blank title			{ $$ = $2; debugResult("header", $2);}
+header		: title skip_blank			{ debugResult("header", "");}
 			;
 
-title		: T_TITLE '{' text '}'		{ $$ = concat(3, "<h1 align=\"center\">", $3, "</h1>"); debugResult("title", $3); }
+title		: T_TITLE '{' text '}'		{ savedTitle = strdup($3); debugResult("title", $3);}//   }
 			;
 
 /* Body */
 
 body		: element 					{ $$ = $1;}
-			| body skip_blank element	{ $$ = concat(3, $1, $2, $3);}
+			| body whitespaces element	{ $$ = concat(3, $1, $2, $3);}
 			;
 
 
@@ -148,19 +93,38 @@ element		: word						{ $$ = $1; debugResult("word", $1);}
 			;
 
 
-command		: graphic					{ $$ = $1; debugResult("command graphic", $1);}
+command		: maketitle					{ $$ = $1; }
+			//| list						{ $$ = $1; debugResult("command list", $1);}
+			| graphic					{ $$ = $1; debugResult("command graphic", $1);}
 			| bold						{ $$ = $1; debugResult("command bold", $1); }
-   		| italic						{ $$ = $1; debugResult("command italic", $1); }
+			| italic					{ $$ = $1; debugResult("command italic", $1); }
 			| '{' text '}'				{ $$ = concat(3, "{", $2, "}"); debugResult("command", $$); }
-   		;
+			;
+
+
+maketitle	: T_MAKETITLE				{ $$ = concat(3, "<h1 align=\"center\">", savedTitle, "</h1>"); debugResult("maketitle", savedTitle);}
+			;
+
+/*list		: T_BEGIN_ITEM skip_blank items T_END_ITEM { $$ = concat(3, "<ul>", $3, "</ul>"); debugResult("list", $3); }
+			;
+
+items		: item						{ $$ = $1; }
+			| items item		{ $$ = concat(2, $1, $2); }
+			;
+
+item		: T_ITEM content skip_blank	{ $$ = concat(3, "<li>", $2, "</li>"); debugResult("item", $2);}
+			;
+
+content		: skip_blank text	{ $$ = $2; debugResult("content", $2); }
+			;*/
 
 graphic		: T_GRAPHIC '{' text '}'	{ $$ = concat(3, "<img src=\"", $3, "\"/>"); }
 			;
 
 bold		: T_BOLD '{' text '}'		{ $$ = concat(3, "<b>", $3, "</b>");}
 			;
-			
-italic	: T_ITALIC '{' text '}'		{ $$ = concat(3, "<i>", $3, "</i>");}
+
+italic		: T_ITALIC '{' text '}'		{ $$ = concat(3, "<i>", $3, "</i>");}
 			;
 
 text		: word
@@ -175,13 +139,17 @@ text2		: /* empty 					{ $$ = ""; debugResult("text2", $$); }
 			;*/
 
 skip_blank	: /* empty */				{ $$ = ""; debugResult("skip_blank", "");}
-			| whitespace skip_blank		{ $$ = concat(2, $1, $2); debugResult("skip_blank", $$);}
+			| whitespaces				{ $$ = $1; debugResult("skip_blank", $1);}
+			;
+			
+whitespaces : whitespace				{ $$ = $1; debugResult("skip_blank", $1);}
+			| whitespaces whitespace	{ $$ = concat(2, $1, $2); debugResult("skip_blank", $$);}
 			;
 
 whitespace	: T_WHITESPACE				{ $$ = " ";}
 //              | T_BREAK T_BREAK     { $$ = "<br>\n";}
 //              | T_BREAK             { $$ = " \n";}
-              | T_BREAK     { $$ = "<BR>\n";}
+			| T_BREAK     { $$ = "<BR>\n";}
 			;
 
 word		: char
@@ -238,6 +206,17 @@ int yyerror(const char* errmsg)
 }
  
 int yywrap(void) { return 1; }
+
+void fPrintFile(char *fileName, FILE *output) {
+	int c;
+	FILE *file;
+	file = fopen(fileName, "r");
+	if (file) {
+		while ((c = getc(file)) != EOF)
+			fputc(c, output);
+		fclose(file);
+	}
+}
 
 void printFile(char *fileName) {
 	int c;

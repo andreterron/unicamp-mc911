@@ -10,8 +10,9 @@
 DOCUMENT_CLASS \\documentclass(\[.*\])?\{.*\}
 USE_PACKAGE    \\usepackage(\[.*\])?\{.*\}
 AUTHOR         \\author\{.*\}
-WHITESPACE     ([ \n\r\t])([ \r\t]+[ \n\r\t])*
 BREAK          \n\n
+WHITESPACE     ([ \n\r\t])([ \r\t]+[ \n\r\t])*
+ITEM			\\item(\[.*\])?
 ANY .
 
 /*** Inclui break pra quebrar linha... Olhei como o tex funcionava, ele so quebra com dois \n
@@ -22,7 +23,7 @@ de ser identificado nele, de resto continua normal ***/
 %%
 
 "\\begin{document}"         {return T_BEGIN_DOC;} //debugToken("begin{document}"); 
-"\\begin{itemize}"          ;//{debugToken("begin{itemize}");}
+"\\begin{itemize}"          ;//{return T_BEGIN_ITEM; debugToken("begin{itemize}");}
 "\\begin{thebibliography}"  ;//{debugToken("begin{thebibliography}");}
 
 "\\end{document}"           {return T_END_DOC;}//{return T_END_DOC;} - debugToken("end{document}"); 
@@ -33,7 +34,7 @@ de ser identificado nele, de resto continua normal ***/
 "\\title"                   {return T_TITLE;}
 "\\textbf"                  {debugToken("BOLD"); return T_BOLD;}
 "\\textit"                  {debugToken("ITALIC"); return T_ITALIC;}
-"\\item"                    ;//{return T_ITEM;}
+{ITEM}                      ;//{return T_ITEM;}
 "\\includegraphics"         {return T_GRAPHIC;}
 "\\cite"                    ;//{return T_CITE;}
 "\\bibitem"                 ;//{return T_BIB_ITEM;}
