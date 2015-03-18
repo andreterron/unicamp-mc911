@@ -123,6 +123,7 @@ items		: item							{ $$ = $1; }
 			;
 
 item		: T_ITEM trim_text				{ $$ = concat(3, "<li>", $2, "</li>"); debugResult("item", $2);}
+         |  T_ITEM '[' trim_text ']' trim_text { $$ = concat(5, "<li><span>", $3, "</span>", $5, "</li>"); debugResult("item", $$);}
 			| list skip_blank				{ $$ = $1; }
 			;
 
@@ -164,6 +165,7 @@ word		: char
 
 char		: T_CHAR
 			;
+
 
 
 

@@ -12,11 +12,11 @@ USE_PACKAGE		\\usepackage(\[.*\])?\{.*\}
 AUTHOR			\\author\{.*\}
 BREAK			\n\n
 WHITESPACE		([ \n\r\t])([ \r\t]+[ \n\r\t])*
-ITEM			\\item(\[.*\])?
 ANY .
 
 /* Token rules */
 %%
+
 
 "\\begin{document}"         {return T_BEGIN_DOC; }
 "\\begin{itemize}"          {return T_BEGIN_ITEM; }
@@ -30,7 +30,7 @@ ANY .
 "\\title"                   {return T_TITLE;}
 "\\textbf"                  {return T_BOLD;}
 "\\textit"                  {return T_ITALIC;}
-{ITEM}                      {return T_ITEM;}
+"\\item"                    {return T_ITEM;}
 "\\includegraphics"         {return T_GRAPHIC;}
 "\\cite"                    {return T_CITE;}
 "\\bibitem"                 {return T_BIB_ITEM;}
@@ -40,6 +40,8 @@ ANY .
 {AUTHOR}                    ;
 
 
+"["							{return '['; }
+"]"							{return ']'; }
 "{"							{return '{'; }
 "}"							{return '}'; }
 
