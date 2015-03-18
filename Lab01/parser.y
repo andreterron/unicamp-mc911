@@ -59,7 +59,7 @@ file		: skip_blank header T_BEGIN_DOC skip_blank body T_END_DOC skip_blank {
 					fPrintFile("header.html", output);
                
 					// Imprime o body no arquivo html
-					fprintf(output, "<p align=\"justify\">%s\n</p>", $5);
+					fprintf(output, "%s\n", $5);
 					
 					// Imprime o footer no arquivo html
 					fPrintFile("footer.html", output);
@@ -115,7 +115,7 @@ bib_item	: T_BIB_ITEM '{' trim_text '}' trim_text		{
 maketitle	: T_MAKETITLE					{ $$ = concat(3, "<h1 align=\"center\">", savedTitle, "</h1>"); debugResult("maketitle", savedTitle);}
 			;
 
-list		: T_BEGIN_ITEM whitespaces items T_END_ITEM { $$ = concat(3, "<ul>", $3, "</ul>"); debugResult("list", $3); }
+list		: T_BEGIN_ITEM whitespaces items T_END_ITEM { $$ = concat(3, "<ul>", $3, "</ul></li>"); debugResult("list", $3); }
 			;
 
 items		: item							{ $$ = $1; }
@@ -155,7 +155,7 @@ whitespaces : whitespace					{ $$ = $1; }//debugResult("skip_blank", $1);}
 			;
 
 whitespace	: T_WHITESPACE					{ $$ = " ";}
-			| T_BREAK						{ $$ = "<br/>\n";}
+			| T_BREAK						{ $$ = "<br/><p>\n";}
 			;
 
 word		: char
