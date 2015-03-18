@@ -9,9 +9,8 @@
 		<script type="text/javascript" >
 		$(function() {
 			$('a.cite').each(function(i, elem) {
-				var id = '#' + $(elem).attr("data-ref")
+				var id = $(elem).attr("href");
 				$(elem).text('[' + $(id).attr('data-id') + ']');
-				$(elem).attr('href', id);
 			});
 		});
 		</script>
@@ -40,7 +39,7 @@
 				text-align: justify;
 				font-family: Georgia, serif;
 			}
-			
+
 			.author {
 				text-align: center;
 			}
@@ -89,8 +88,8 @@ A escolha de um numero constante de linhas segue a ideia de que sao necessarios 
 Portanto a partir da escolha das $ak$ linhas, podemos formar uma matriz $V$ de tipos efetivos.<br/><p>
 <i>Escolha das colunas</i><br/><p>
 A ideia de escolher um numero constante de colunas acontece pois todo usuario que deseja obter uma recomendacao deve responder inicialmente um pequeno  questionario, dando alguma informacao sua para que o algoritmo de recomendacao <b>Ideia da prova</b><br/><p>
-Primeiramente separa-se os casos em que o usuario faz parte do comite e quando o usuario nao faz  Para o caso em que o usuario faz parte do comite, ele tera que fazer $K$ provas. Para o caso em que o usuario nao esta no comite, e calculada a esperanca do numero  de provas que ele tera que fazer. Como a ordem dos produtos recomendados e aleatoria, o numero de provas que um usuario tera que fazer e uma variavel aleatoria geometrica. Logo, basta fazer a analise da esperanca para essa variavel aleatoria <a class="cite" data-ref="MG"></a>. O resultado do teorema aparece com a esperanca do numero de provas para cada caso.<br/><p>
-<i>Comite</i> A tecnica de criar um comite do algoritmo proposto possui serias desvantagens.  A primeira delas e que a complexidade de recomendacao individual e $\Omega(n)$, ja que os usuarios do comite tem que provar todos os algoritmos.  Um segundo ponto contra esta tecnica e a existencia de usuarios desonestos, que, quando escolhidos para o comite, atrapalham o funcionamento do  algoritmo de recomendacoes <a class="cite" data-ref="Boney96"></a>.<br/><p>
+Primeiramente separa-se os casos em que o usuario faz parte do comite e quando o usuario nao faz  Para o caso em que o usuario faz parte do comite, ele tera que fazer $K$ provas. Para o caso em que o usuario nao esta no comite, e calculada a esperanca do numero  de provas que ele tera que fazer. Como a ordem dos produtos recomendados e aleatoria, o numero de provas que um usuario tera que fazer e uma variavel aleatoria geometrica. Logo, basta fazer a analise da esperanca para essa variavel aleatoria <a class="cite" href="#MG"></a>. O resultado do teorema aparece com a esperanca do numero de provas para cada caso.<br/><p>
+<i>Comite</i> A tecnica de criar um comite do algoritmo proposto possui serias desvantagens.  A primeira delas e que a complexidade de recomendacao individual e $\Omega(n)$, ja que os usuarios do comite tem que provar todos os algoritmos.  Um segundo ponto contra esta tecnica e a existencia de usuarios desonestos, que, quando escolhidos para o comite, atrapalham o funcionamento do  algoritmo de recomendacoes <a class="cite" href="#Boney96"></a>.<br/><p>
 <b>Conclusao e trabalhos futuros</b><br/><p>
 Atraves deste estudo, verificou-se a existencia de solucoes com abordagens totalmente diferentes para o problema de sistemas de recomendacoes. Mas o mais importante foi o aprendizado das tecnicas mais gerais para resolucao de problemas como por exemplo SVD.  Potenciais trabalhos futuros sao a implementacao e comparacao dos algoritmos na pratica ou alteracao neles para que ao inves de dispor de informacoes de colunas inteiras, os algoritmos funcionem com posicoes esparsas na matriz. <br/><p>
  <h2>References</h2><ol start="0"><li id="Boney96" data-id="0"> Boney, L., Tewfik, A.H., and Hamdy, K.N., Digital  Watermarks for Audio Signals, Proceedings of the Third IEEE International Conference on Multimedia, pp. 473-480, June 1996. </li><li id="MG" data-id="1"> Goossens, M., Mittelbach, F., Samarin, A LaTeX Companion, Addison-Wesley, Reading, MA, 1994. </li><li id="HK" data-id="2"> Kopka, H., Daly P.W., A Guide to LaTeX, Addison-Wesley, Reading, MA, 1999. </li><li id="Pan" data-id="3"> Pan, D., A Tutorial on MPEG/Audio Compression, IEEE Multimedia, Vol.2, pp.60-74, Summer 1998. </li></ol><br/><p>

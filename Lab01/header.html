@@ -9,9 +9,8 @@
 		<script type="text/javascript" >
 		$(function() {
 			$('a.cite').each(function(i, elem) {
-				var id = '#' + $(elem).attr("data-ref")
+				var id = $(elem).attr("href");
 				$(elem).text('[' + $(id).attr('data-id') + ']');
-				$(elem).attr('href', id);
 			});
 		});
 		</script>

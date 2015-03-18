@@ -104,7 +104,7 @@ command		: maketitle						{ $$ = $1; }
 			| '{' trim_text '}'				{ $$ = concat(3, "{", $2, "}"); debugResult("command", $$); }
 			;
 
-cite		: T_CITE '{' trim_text '}'  	{ $$ = concat(3, "<a class=\"cite\" data-ref=\"", $3, "\"></a>"); }
+cite		: T_CITE '{' trim_text '}'  	{ $$ = concat(3, "<a class=\"cite\" href=\"#", $3, "\"></a>"); }
 			;
 
 bib			: T_BEGIN_BIB skip_blank bib_items T_END_BIB { $$ = concat(3, "<h2>References</h2><ol start=\"0\">", $3, "</ol>"); debugResult("bib", $3); }
