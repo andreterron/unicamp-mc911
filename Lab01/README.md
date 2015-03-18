@@ -48,3 +48,5 @@ which can be specified with the --output option or the `stdout` if not specified
 * `-d, --debug`	Will activate debug prints
 
 * `-o, --output <file.html>`	Places the output into <file.html>. If not present, it will be written to `stdout`
+
+* `-h, --help`	Displays a help page
