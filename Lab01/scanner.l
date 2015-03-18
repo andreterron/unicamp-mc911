@@ -58,25 +58,42 @@ ANY .
 %%
 
 YYSTYPE yylval;
-extern debug;
+extern int debug;
+extern int fileOutput;
+extern FILE *output;
+
+
+void yyerror(char *s) {
+	printf("%d: %s at %s\n", yylineno, s, yytext);
+}
 
 int setFlags(int argc, char** argv) {
-	int i, token = 0;
+	int i, token = 0, expectOutput = 0;
+	fileOutput = 0;
 	char *c;
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
 			for (c = &(argv[i][1]); *c != '\0'; c++) {
 				if (*c == 't') token = 1;
 				if (*c == 'd') debug = 1;
+				if (*c == 'o') expectOutput = 1;
 			}
+		} else if (expectOutput = 1) {
+			output = fopen(argv[i], "w");
+			fileOutput = 1;
+			expectOutput = 0;
 		}
 	}
+	if (!fileOutput) {
+		output = stdout;
+	}
+	if (expectOutput) {
+		char msg[256];
+		sprintf(msg, "Error: no output file specified with -o.\n\tUsage: %s [-o <path/to/output.html>]", argv[0]);
+		yyerror(msg);
+		exit(0);
+	}
 	return token;
-}
-
-
-void yyerror(char *s) {
-	printf("%d: %s at %s\n", yylineno, s, yytext);
 }
 
 int main(int argc, char** argv) {

@@ -9,6 +9,8 @@ void debugResult(const char* type, const char* result);
 void fPrintFile(char *fileName, FILE *output);
 
 int debug = 0;
+int fileOutput = 0;
+FILE *output;
 int bib_id = 0;
 char *savedTitle = NULL;
 
@@ -51,18 +53,19 @@ char *savedTitle = NULL;
 
 /* Grammar rules */
 file		: skip_blank header T_BEGIN_DOC skip_blank body T_END_DOC skip_blank {
-					FILE *T = fopen("teste.html", "w");
+					//FILE *T = fopen("teste.html", "w");
 
 					// Imprime os headers no arquivo html
-					fPrintFile("header.html", T);
+					fPrintFile("header.html", output);
                
 					// Imprime o body no arquivo html
-					fprintf(T, "<p align=\"justify\">%s\n</p>", $5);
+					fprintf(output, "<p align=\"justify\">%s\n</p>", $5);
 					
 					// Imprime o footer no arquivo html
-					fPrintFile("footer.html", T);
+					fPrintFile("footer.html", output);
 					
-					fclose(T);
+					if (fileOutput)
+						fclose(output);
 				};
 
 /* Header */
