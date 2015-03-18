@@ -72,12 +72,18 @@ int setFlags(int argc, char** argv) {
 	fileOutput = 0;
 	char *c;
 	for (i = 1; i < argc; i++) {
-		if (argv[i][0] == '-') {
+		if (argv[i][0] == '-' && argv[i][1] != '-' ) {
 			for (c = &(argv[i][1]); *c != '\0'; c++) {
 				if (*c == 't') token = 1;
 				if (*c == 'd') debug = 1;
 				if (*c == 'o') expectOutput = 1;
 			}
+		} else if (!strcmp(argv[i], "--token")) {
+			token = 1;
+		} else if (!strcmp(argv[i], "--debug")) {
+			debug = 1;
+		} else if (!strcmp(argv[i], "--output")) {
+			expectOutput = 1;
 		} else if (expectOutput = 1) {
 			output = fopen(argv[i], "w");
 			fileOutput = 1;
