@@ -59,9 +59,11 @@ ANY .
 %%
 
 YYSTYPE yylval;
+int help = 0;
 extern int debug;
 extern int fileOutput;
 extern FILE *output;
+extern FILE *yyin;
 
 
 void yyerror(char *s) {
@@ -78,6 +80,7 @@ int setFlags(int argc, char** argv) {
 				if (*c == 't') token = 1;
 				if (*c == 'd') debug = 1;
 				if (*c == 'o') expectOutput = 1;
+				if (*c == 'h') help = 1;
 			}
 		} else if (!strcmp(argv[i], "--token")) {
 			token = 1;
@@ -85,10 +88,17 @@ int setFlags(int argc, char** argv) {
 			debug = 1;
 		} else if (!strcmp(argv[i], "--output")) {
 			expectOutput = 1;
-		} else if (expectOutput = 1) {
+		} else if (!strcmp(argv[i], "--help")) {
+			help = 1;
+		} else if (expectOutput == 1) {
 			output = fopen(argv[i], "w");
 			fileOutput = 1;
 			expectOutput = 0;
+		} else {
+			FILE *f = fopen(argv[i], "r");
+			if (f) {
+				yyin = f;
+			}
 		}
 	}
 	if (!fileOutput) {
@@ -105,7 +115,9 @@ int setFlags(int argc, char** argv) {
 
 int main(int argc, char** argv) {
 	int tFlag = setFlags(argc, argv);
-	if (tFlag) {
+	if (help) {
+		printFile("help.txt");
+	} else if (tFlag) {
 		int token;
 		while ((token = yylex()) != 0)
 			printf("Token: %d (%s)\n", token, yytext);
