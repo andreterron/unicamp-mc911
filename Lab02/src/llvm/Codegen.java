@@ -18,7 +18,7 @@ que auxiliam a geração de código em LLVM-IR. Quase todas
 as classes estão prontas; apenas as seguintes precisam ser 
 implementadas: 
 
-// llvmasm/LlvmBranch.java
+// llvmasm/LlvmBranch.java -> Testar
 // llvmasm/LlvmIcmp.java -> Testar
 // llvmasm/LlvmMinus.java -> OK
 // llvmasm/LlvmTimes.java -> OK
