@@ -7,6 +7,7 @@ Using Flex and Bison libs
 ## Labs
 
 * Lab01	- Tex to HTML translator
+* Lab02	- Java to LLVM translator
 
 ## Exercises
 
