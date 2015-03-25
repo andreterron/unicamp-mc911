@@ -9,7 +9,6 @@
 
 DOCUMENT_CLASS	\\documentclass(\[.*\])?\{.*\}
 USE_PACKAGE		\\usepackage(\[.*\])?\{.*\}
-AUTHOR			\\author\{.*\}
 BREAK			\n\n
 WHITESPACE		([ \n\r\t])([ \r\t]+[ \n\r\t])*
 ANY .
@@ -26,8 +25,10 @@ ANY .
 "\\end{itemize}"            {return T_END_ITEM;}
 "\\end{thebibliography}"    {return T_END_BIB;}
 
-"\\maketitle"               {return T_MAKETITLE;}
+"\\author"                  {return T_AUTHOR;}
 "\\title"                   {return T_TITLE;}
+
+"\\maketitle"               {return T_MAKETITLE;}
 "\\textbf"                  {return T_BOLD;}
 "\\textit"                  {return T_ITALIC;}
 "\\item"                    {return T_ITEM;}
@@ -37,14 +38,16 @@ ANY .
 
 {DOCUMENT_CLASS}            ;
 {USE_PACKAGE}               ;
-{AUTHOR}                    ;
-
 
 "["							{return '['; }
 "]"							{return ']'; }
 "{"							{return '{'; }
 "}"							{return '}'; }
 
+{BREAK} {
+		yylval.str = (char *) strdup(yytext);
+		return T_BREAK;
+	}
 {WHITESPACE}  {
 		yylval.str = (char *) strdup(yytext);
 		return T_WHITESPACE;
@@ -53,16 +56,14 @@ ANY .
 		yylval.str = (char *) strdup(yytext);
 		return T_CHAR;
 	}
-{BREAK} {
-		yylval.str = (char *) strdup(yytext);
-		return T_BREAK;
-	}
 %%
 
 YYSTYPE yylval;
+int help = 0;
 extern int debug;
 extern int fileOutput;
 extern FILE *output;
+extern FILE *yyin;
 
 
 void yyerror(char *s) {
@@ -79,6 +80,7 @@ int setFlags(int argc, char** argv) {
 				if (*c == 't') token = 1;
 				if (*c == 'd') debug = 1;
 				if (*c == 'o') expectOutput = 1;
+				if (*c == 'h') help = 1;
 			}
 		} else if (!strcmp(argv[i], "--token")) {
 			token = 1;
@@ -86,10 +88,17 @@ int setFlags(int argc, char** argv) {
 			debug = 1;
 		} else if (!strcmp(argv[i], "--output")) {
 			expectOutput = 1;
-		} else if (expectOutput = 1) {
+		} else if (!strcmp(argv[i], "--help")) {
+			help = 1;
+		} else if (expectOutput == 1) {
 			output = fopen(argv[i], "w");
 			fileOutput = 1;
 			expectOutput = 0;
+		} else {
+			FILE *f = fopen(argv[i], "r");
+			if (f) {
+				yyin = f;
+			}
 		}
 	}
 	if (!fileOutput) {
@@ -106,7 +115,9 @@ int setFlags(int argc, char** argv) {
 
 int main(int argc, char** argv) {
 	int tFlag = setFlags(argc, argv);
-	if (tFlag) {
+	if (help) {
+		printFile("help.txt");
+	} else if (tFlag) {
 		int token;
 		while ((token = yylex()) != 0)
 			printf("Token: %d (%s)\n", token, yytext);

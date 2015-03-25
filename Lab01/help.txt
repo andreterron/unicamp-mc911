@@ -1,0 +1,32 @@
+
+Usage:
+
+./parse [<input.tex>] [-t|--token] [-d|--debug]
+             [-o|--output <path/to/ouput.html>]
+
+  The program will translate the tex file, which can be the <input.tex>
+  or the stdin if <input.tex> isn't specified, into a html file, which
+  can be specified with the --output option or the stdout if not specified.
+
+Options:
+
+  -t, --token               Will only display the tokens matched,
+                            no rules will be evaluated (for debug purposes)
+
+  -d, --debug               Will activate debug prints
+
+  -o, --output <file.html>  Places the output into <file.html>. If not
+                            present, it will be written to stdout
+
+  -h, --help                Displays this help page
+
+
+Authors:
+
+  Andre Vitor Terron
+  
+  Lucas Domingues Lima
+  
+  http://www.github.com/andreterron/unicamp-mc911/
+
+
