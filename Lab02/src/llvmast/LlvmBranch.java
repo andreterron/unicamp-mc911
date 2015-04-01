@@ -19,7 +19,7 @@ public  class LlvmBranch extends LlvmInstruction{
       if(cond != null) {
          // Conditional branch
 
-   	   return "  " + "br i1 " + cond + ", label " + brTrue + ", label " + brFalse;
+   	   return "  " + "br i1 " + cond + ", label %" + brTrue + ", label %" + brFalse;
 
          // Reference
          // br i1 <cond>, label <iftrue>, label <iffalse>   	   
@@ -28,7 +28,7 @@ public  class LlvmBranch extends LlvmInstruction{
       else if (brTrue != null) {
          // Unconditional branch
 
-         return "  " + "br label " + brTrue;
+         return "  " + "br label %" + brTrue;
 
          // Reference
          // br label <dest>

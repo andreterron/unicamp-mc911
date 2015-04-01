@@ -173,6 +173,56 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(IntegerLiteral n){
 		return new LlvmIntegerLiteral(n.value);
 	};
+	public LlvmValue visit(True n){
+		return new LlvmBool(LlvmBool.TRUE);
+	}
+	public LlvmValue visit(False n){
+		return new LlvmBool(LlvmBool.FALSE);
+	}
+	
+	/**
+	 * Not tested yet
+	 */
+	public LlvmValue visit(And n){
+		LlvmValue v1 = n.lhs.accept(this);
+		LlvmValue v2 = n.rhs.accept(this);
+		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I1);
+		assembler.add(new LlvmBitwiseBinary(lhs,LlvmBitwiseBinary.AND,LlvmPrimitiveType.I1,v1,v2));
+		return lhs;
+	}
+	
+	public LlvmValue visit(Block n){
+		for (util.List<Statement> c = n.body; c != null; c = c.tail) {
+		//for (Statement stmt : n.body.toArray()) {
+		//for (int i = 0; i < n.body.size(); i++) {
+			//Statement stmt = n.body.get(i);
+			c.head.accept(this);
+		}
+		return null;
+	}
+	
+	public LlvmValue visit(If n){
+		int line = n.line;
+		LlvmValue cmp = n.condition.accept(this);
+		LlvmLabelValue trueLabel = new LlvmLabelValue("true" + line);
+		//LlvmLabelValue elseLabel = new LlvmLabelValue("else" + line);
+		LlvmLabelValue endLabel = new LlvmLabelValue("end" + line);
+		assembler.add(new LlvmBranch(cmp, trueLabel, endLabel));
+		assembler.add(new LlvmLabel(trueLabel));
+		n.thenClause.accept(this);
+		assembler.add(new LlvmBranch(null, endLabel, null));
+		assembler.add(new LlvmLabel(endLabel));
+		//n.elseClause.accept(this);
+		//assembler.add(new LlvmLabel(endLabel));
+		return cmp;
+	}
+	public LlvmValue visit(Not n){
+		LlvmValue v = n.exp.accept(this);
+		LlvmBool t = new LlvmBool(LlvmBool.TRUE);
+		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I1);
+		assembler.add(new LlvmBitwiseBinary(lhs,LlvmBitwiseBinary.XOR,LlvmPrimitiveType.I1,t,v));
+		return lhs;
+	}
 	
 	// Todos os visit's que devem ser implementados	
 	public LlvmValue visit(ClassDeclSimple n){return null;}
@@ -184,26 +234,26 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(BooleanType n){return null;}
 	public LlvmValue visit(IntegerType n){return null;}
 	public LlvmValue visit(IdentifierType n){return null;}
-	public LlvmValue visit(Block n){return null;}
-	public LlvmValue visit(If n){return null;}
+//	public LlvmValue visit(Block n){return null;}
+//	public LlvmValue visit(If n){return null;} // OK, acima
 	public LlvmValue visit(While n){return null;}
 	public LlvmValue visit(Assign n){return null;}
 	public LlvmValue visit(ArrayAssign n){return null;}
-	public LlvmValue visit(And n){return null;}
+//	public LlvmValue visit(And n){return null;} // OK, acima
 	public LlvmValue visit(LessThan n){return null;}
 	public LlvmValue visit(Equal n){return null;}
-//	public LlvmValue visit(Minus n){return null;} OK, acima
-//	public LlvmValue visit(Times n){return null;} OK, acima
+//	public LlvmValue visit(Minus n){return null;} // OK, acima
+//	public LlvmValue visit(Times n){return null;} // OK, acima
 	public LlvmValue visit(ArrayLookup n){return null;}
 	public LlvmValue visit(ArrayLength n){return null;}
 	public LlvmValue visit(Call n){return null;}
-	public LlvmValue visit(True n){return null;}
-	public LlvmValue visit(False n){return null;}
+//	public LlvmValue visit(True n){return null;} // OK, acima
+//	public LlvmValue visit(False n){return null;} // OK, acima
 	public LlvmValue visit(IdentifierExp n){return null;}
 	public LlvmValue visit(This n){return null;}
 	public LlvmValue visit(NewArray n){return null;}
 	public LlvmValue visit(NewObject n){return null;}
-	public LlvmValue visit(Not n){return null;}
+//	public LlvmValue visit(Not n){return null;} // OK, acima
 	public LlvmValue visit(Identifier n){return null;}
 }
 

@@ -5,7 +5,7 @@
 # $ make
 #
 # Como executar o compilador:
-# $ make run INPUT=test/teste.java OUTPUT=teste.s
+# $ make run INPUT=test/test.java OUTPUT=teste.s
 #
 # Como executar:
 # $ lli teste.s

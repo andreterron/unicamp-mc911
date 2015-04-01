@@ -14,27 +14,27 @@ public  class LlvmIcmp extends LlvmInstruction{
 	   this.op2 = op2;
 	
 	   switch(conditionCode) {
-         case 1: this.condition = "eq";
+         case EQ:  this.condition = "eq" ;
                 break;
-         case 2: this.condition = "ne";
+         case NE:  this.condition = "ne" ;
                 break;
-         case 3: this.condition = "ugt";
+         case UGT: this.condition = "ugt";
                 break;
-         case 4: this.condition = "uge";
+         case UGE: this.condition = "uge";
                 break;
-         case 5: this.condition = "ult";
+         case ULT: this.condition = "ult";
                 break;
-         case 6: this.condition = "ule";
+         case ULE: this.condition = "ule";
                 break;
-         case 7: this.condition = "sgt";
+         case SGT: this.condition = "sgt";
                 break;
-         case 8: this.condition = "sge";
+         case SGE: this.condition = "sge";
                 break;
-         case 9: this.condition = "slt";
+         case SLT: this.condition = "slt";
                 break;
-         case 10: this.condition = "sle";
+         case SLE: this.condition = "sle";
                 break;
-         default: this.condition = null; 
+         default:  this.condition =  null; 
                 break;
       }   
     }  
@@ -45,4 +45,16 @@ public  class LlvmIcmp extends LlvmInstruction{
 	   // Reference
 	   // <result> = icmp <cond> <ty> <op1>, <op2>
     }
+    
+    public static final int EQ  = 1;
+    public static final int NE  = 2;
+    public static final int UGT = 3;
+    public static final int UGE = 4;
+    public static final int ULT = 5;
+    public static final int ULE = 6;
+    public static final int SGT = 7;
+    public static final int SGE = 8;
+    public static final int SLT = 9;
+    public static final int SLE = 10;
+    
 }
