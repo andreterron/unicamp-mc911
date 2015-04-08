@@ -1,0 +1,37 @@
+
+CREATE TABLE tab1 (
+	nome,
+	cpf,
+	endereco,
+	cidade,
+	profissao
+);
+
+CREATE TABLE tab2 (
+	aluno,
+	RA,
+	curso,
+	obs
+);
+
+
+INSERT INTO tab1 VALUES (
+	Antonio, c111111, Rua_31, Floria, Agricultor
+);
+
+INSERT INTO tab1 VALUES (
+	Roberto, c222222, Rua_1, Campinas, Engenheiro
+);
+
+
+INSERT INTO tab1 VALUES (
+	Luiz, c333333, Rua_30, Indaiatuba, Arquiteto
+);
+
+SELECT * FROM tab1;
+
+
+SELECT nome, profissao, cidade, cpf FROM tab1;
+
+SELECT profissao, cidade, endereco, cpf, nome FROM tab1;
+

@@ -11,13 +11,11 @@ struct t_col_list {
 	int order;
 };
 
-typedef struct t_col_list column;
-
 char *concat(int count, ...);
 char *selectFromTable(char *table);
-char *selectCols(char *table, column *col);
-char *colListToString(column *col);
-column *createColumn(char *name, column *list);
+char *selectCols(char *table, struct t_col_list *col);
+char *colListToString(struct t_col_list *col);
+struct t_col_list *createColumn(char *name, struct t_col_list *list);
 
 
 %}
@@ -25,7 +23,7 @@ column *createColumn(char *name, column *list);
 %union{
 	char *str;
 	int  *intval;
-	column *list_col;
+	struct t_col_list *list_col;
 }
 
 %token <str> T_STRING
@@ -101,8 +99,8 @@ values_list:
  
 %%
 
-column *createColumn(char *name, column *list) {
-	column *c = malloc(sizeof(column));
+struct t_col_list *createColumn(char *name, struct t_col_list *list) {
+	struct t_col_list *c = malloc(sizeof(struct t_col_list));
 	c->name = name;
 	c->prev = list;
 	if (list == NULL) {
@@ -113,14 +111,14 @@ column *createColumn(char *name, column *list) {
 	return c;
 }
 
-char *selectCols(char *table, column *col) {
+char *selectCols(char *table, struct t_col_list *col) {
 	char line[1024];
 	char * result = "", *line_res, *res, *token;
 	char s[4] = ";\n";
 	char *saveptr;
 	int order = 0;
 	FILE *file = fopen(table, "r");
-	column *aux;
+	struct t_col_list *aux;
 	
 	// READS THE COLUMNS
 	
@@ -148,7 +146,7 @@ char *selectCols(char *table, column *col) {
 		for (aux = col; aux != NULL; aux = aux->prev) {
 		
 			/* get the first token */
-			token = strtok_r(line, s, &saveptr);
+			token = strtok_r(concat(1, line), s, &saveptr);
 			
 			/* walk through other tokens */
 			for (order = 0; order < aux->order && token != NULL; order++) 
@@ -173,7 +171,7 @@ char *selectCols(char *table, column *col) {
 	return result;
 }
 
-char *colListToString(column *col) {
+char *colListToString(struct t_col_list *col) {
 	char *result = NULL;
 	while (col != NULL) {
 		if (result == NULL) {
