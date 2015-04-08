@@ -17,7 +17,7 @@ Acrescente agora a classe Poupan&amp;ccedil;a herdada de Conta com as seguintes 
 
 Seu arquivo &amp;ldquo;classes.s&amp;rdquo; deve conter apenas a implementa&amp;ccedil;&amp;atilde;o dessas classes solicitadas. A fun&amp;ccedil;&amp;atilde;o &amp;ldquo;main&amp;rdquo;, necess&amp;aacute;ria para a execu&amp;ccedil;&amp;atilde;o, ser&amp;aacute; fornecida no conjunto de testes. Este pacote possui um &amp;quot;main.s&amp;quot; de exemplo e um &amp;quot;Makefile&amp;quot;. Adicione seu &amp;quot;classes.s&amp;quot; no mesmo diret&amp;oacute;rio e use o comando &amp;ldquo;make&amp;rdquo;. O execut&amp;aacute;vel resultante ser&amp;aacute; &amp;ldquo;banco&amp;rdquo;. A sa&amp;iacute;da esperada para esse &amp;quot;main.s&amp;quot; &amp;eacute; 330.
 
-Observa&amp;ccedil;&amp;otilde;es:
+### Observa&amp;ccedil;&amp;otilde;es:
 
 * A fim de padronizar o nome das fun&amp;ccedil;&amp;otilde;es, utilize os nomes &amp;ldquo;mangling&amp;rdquo; que est&amp;atilde;o declarados em &amp;quot;main.s.&amp;quot;
 * Al&amp;eacute;m das instru&amp;ccedil;&amp;otilde;es aritm&amp;eacute;ticas conhecidas mul, sub e add, no m&amp;eacute;todo atualizarSaldo deve-se utilizar a instru&amp;ccedil;&amp;atilde;o sdiv , que possui a sintaxe id&amp;ecirc;ntica &amp;agrave; mul .
