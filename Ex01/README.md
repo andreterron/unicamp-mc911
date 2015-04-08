@@ -13,7 +13,7 @@ Dado o exemplo Flex e Bison com comandos SQL mostrado em sala e dispon&iacute;ve
 A entrada deste laborat&oacute;rio deve ser um arquivo chamado 'sql.zip', contendo os arquivos do flex (.l), do bison (.y) e um Makefile capaz gerar o parser.
 O execut&aacute;vel deve ter o nome de parsersql e deve ser capaz de receber redirecionamento:
 
-	./parsersql &lt; input.sql 
+	./parsersql < input.sql 
 
 Segue um exemplo de arquivo de entrada: select-input.sql ; e a sa&iacute;da correspondente: select-output.sql
 O Susy apenas receber&aacute; o pacote; n&atilde;o realizar&aacute; corre&ccedil;&otilde;es
