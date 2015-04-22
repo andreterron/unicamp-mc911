@@ -3,12 +3,14 @@ define i32 @main() {
 entry:
   %tmp0 = alloca i32
   store i32 0, i32 * %tmp0
-  %tmp1 = xor i1 true, true
-  br i1 %tmp1, label %true6, label %end6
-true6:
+  br label %while6
+while6:
+  %tmp1 = icmp ult i32 1, 4
+  br i1 %tmp1, label %do6, label %end6
+do6:
   %tmp2 = getelementptr [4 x i8] * @.formatting.string, i32 0, i32 0
   %tmp3 = call i32 (i8 *, ...)* @printf(i8 * %tmp2, i32 1)
-  br label %end6
+  br label %while6
 end6:
   %tmp4 = load i32 * %tmp0
   ret i32 %tmp4

@@ -18,8 +18,8 @@ que auxiliam a geração de código em LLVM-IR. Quase todas
 as classes estão prontas; apenas as seguintes precisam ser 
 implementadas: 
 
-// llvmasm/LlvmBranch.java -> Testar
-// llvmasm/LlvmIcmp.java -> Testar
+// llvmasm/LlvmBranch.java -> OK? Funciona no If
+// llvmasm/LlvmIcmp.java -> OK? Funciona no LessThan e Equal
 // llvmasm/LlvmMinus.java -> OK
 // llvmasm/LlvmTimes.java -> OK
 
@@ -196,6 +196,22 @@ public class Codegen extends VisitorAdapter{
 		return cmp;
 	}
 
+   public LlvmValue visit(While n){
+		int line = n.line;
+		LlvmLabelValue whileLabel = new LlvmLabelValue("while" + line);
+		LlvmLabelValue doLabel = new LlvmLabelValue("do" + line);
+		LlvmLabelValue endLabel = new LlvmLabelValue("end" + line);
+		assembler.add(new LlvmBranch(null, whileLabel, null));
+		assembler.add(new LlvmLabel(whileLabel));
+		LlvmValue cmp = n.condition.accept(this);
+		assembler.add(new LlvmBranch(cmp, doLabel, endLabel));
+      assembler.add(new LlvmLabel(doLabel));
+  		n.body.accept(this);
+		assembler.add(new LlvmBranch(null, whileLabel, null));
+		assembler.add(new LlvmLabel(endLabel));
+		return null;
+	}
+	
 	public LlvmValue visit(And n){
 		LlvmValue v1 = n.lhs.accept(this);
 		LlvmValue v2 = n.rhs.accept(this);
@@ -252,25 +268,25 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(IntegerType n){return null;}
 	public LlvmValue visit(IdentifierType n){return null;}
 //	public LlvmValue visit(Block n){return null;}
-//	public LlvmValue visit(If n){return null;} // OK, acima
-	public LlvmValue visit(While n){return null;}
+//	public LlvmValue visit(If n){return null;} // OK
+//	public LlvmValue visit(While n){return null;} // OK
 	public LlvmValue visit(Assign n){return null;}
 	public LlvmValue visit(ArrayAssign n){return null;}
-//	public LlvmValue visit(And n){return null;} // OK, acima
-//	public LlvmValue visit(LessThan n){return null;} OK, acima
-//	public LlvmValue visit(Equal n){return null;} OK, acima
-//	public LlvmValue visit(Minus n){return null;} // OK, acima
-//	public LlvmValue visit(Times n){return null;} // OK, acima
+//	public LlvmValue visit(And n){return null;} // OK
+//	public LlvmValue visit(LessThan n){return null;} OK
+//	public LlvmValue visit(Equal n){return null;} OK
+//	public LlvmValue visit(Minus n){return null;} // OK
+//	public LlvmValue visit(Times n){return null;} // OK
 	public LlvmValue visit(ArrayLookup n){return null;}
 	public LlvmValue visit(ArrayLength n){return null;}
 	public LlvmValue visit(Call n){return null;}
-//	public LlvmValue visit(True n){return null;} // OK, acima
-//	public LlvmValue visit(False n){return null;} // OK, acima
+//	public LlvmValue visit(True n){return null;} // OK
+//	public LlvmValue visit(False n){return null;} // OK
 	public LlvmValue visit(IdentifierExp n){return null;}
 	public LlvmValue visit(This n){return null;}
 	public LlvmValue visit(NewArray n){return null;}
 	public LlvmValue visit(NewObject n){return null;}
-//	public LlvmValue visit(Not n){return null;} // OK, acima
+//	public LlvmValue visit(Not n){return null;} // OK
 	public LlvmValue visit(Identifier n){return null;}
 }
 
