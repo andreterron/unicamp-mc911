@@ -18,16 +18,17 @@ define i32 @main() #0 {
   %5 = load i32* %4, align 4
   %6 = load i32* %y, align 4
   %7 = icmp slt i32 %5, %6
-  br i1 %7, label %8, label %12
+  br i1 %7, label %8, label %13
 
 ; <label>:8                                       ; preds = %3
   %9 = getelementptr inbounds [10 x i32]* %x, i32 0, i64 1
   %10 = load i32* %9, align 4
   %11 = add nsw i32 %10, 1
-  store i32 %11, i32* %9, align 4
+  %12 = getelementptr inbounds [10 x i32]* %x, i32 0, i64 1
+  store i32 %11, i32* %12, align 4
   br label %3
 
-; <label>:12                                      ; preds = %3
+; <label>:13                                      ; preds = %3
   ret i32 0
 }
 

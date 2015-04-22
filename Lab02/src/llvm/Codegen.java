@@ -269,6 +269,19 @@ public class Codegen extends VisitorAdapter{
 		assembler.add(new LlvmStore(value, lhs)); 
 	   return null;
 	}
+	
+	public LlvmValue visit(ArrayLookup n){
+	   LlvmValue array = n.array.accept(this);
+   	LlvmValue index = n.index.accept(this);
+
+		LlvmRegister lhs = new LlvmRegister(new LlvmPointer(LlvmPrimitiveType.I32));
+		List<LlvmValue> offsets = new LinkedList<LlvmValue>();
+		offsets.add(index); // Calcula offset
+		assembler.add(new LlvmGetElementPointer(lhs,array,offsets)); // Pega ponteiro para posicao desejada com offset
+		
+	   return lhs;
+	}
+
 
 	public LlvmValue visit(Block n){
 		for (util.List<Statement> c = n.body; c != null; c = c.tail) {
@@ -340,7 +353,7 @@ public class Codegen extends VisitorAdapter{
 //	public LlvmValue visit(Equal n){return null;} OK
 //	public LlvmValue visit(Minus n){return null;} // OK
 //	public LlvmValue visit(Times n){return null;} // OK
-	public LlvmValue visit(ArrayLookup n){return null;}
+//	public LlvmValue visit(ArrayLookup n){return null;} // Falta testar
 	public LlvmValue visit(ArrayLength n){return null;}
 	public LlvmValue visit(Call n){return null;}
 //	public LlvmValue visit(True n){return null;} // OK
