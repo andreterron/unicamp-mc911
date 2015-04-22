@@ -19,7 +19,7 @@ public class LlvmClassDeclaration extends LlvmInstruction {
 		String result = classType + " = type { ";
 		int join = 0;
 		for (LlvmType type : fieldTypes) {
-			result  += type + (join == 1 ? ", " : "");
+			result  += (join == 1 ? ", " + type : type);
 			join = 1;
 		}
 		return result + " }";
