@@ -280,15 +280,55 @@ public class Codegen extends VisitorAdapter{
 		return null;
 	}
 	
+	public LlvmValue visit(ClassDeclSimple n){
+		
+		List<LlvmType> types = new LinkedList();
+		for (util.List<VarDecl> c = n.varList; c != null; c = c.tail) {
+			types.add(c.head.accept(this).type);
+		}
+		
+		assembler.add(new LlvmClassDeclaration(new LlvmClassType(n.name.s), types));
+		for (util.List<MethodDecl> c = n.methodList; c != null; c = c.tail) {
+		//for (Statement stmt : n.body.toArray()) {
+		//for (int i = 0; i < n.body.size(); i++) {
+			//Statement stmt = n.body.get(i);
+			c.head.accept(this);
+		}
+		//for (MethodDecl method : n.methodList) {
+		//	method.accept(this);
+		//}
+		return null;
+	}
+	
+	public LlvmValue visit(VarDecl n){
+		return new LlvmNamedValue(n.name.s, n.type.accept(this).type);
+	}
+	
+	public LlvmValue visit(MethodDecl n){
+		LlvmType resultType = n.returnType.accept(this).type;
+		
+		assembler.add(new LlvmDefine("@__" + n.name.s, resultType, new LinkedList()));
+		assembler.add(new LlvmCloseDefinition());
+		return null;
+	}
+	
+	public LlvmValue visit(BooleanType n){
+		return new LlvmNamedValue("boolean", LlvmPrimitiveType.I1);
+	}
+	
+	public LlvmValue visit(IntegerType n){
+		return new LlvmNamedValue("int", LlvmPrimitiveType.I32);
+	}
+	
 	// Todos os visit's que devem ser implementados	
-	public LlvmValue visit(ClassDeclSimple n){return null;}
+	//public LlvmValue visit(ClassDeclSimple n){return null;}
 	public LlvmValue visit(ClassDeclExtends n){return null;}
-	public LlvmValue visit(VarDecl n){return null;}
-	public LlvmValue visit(MethodDecl n){return null;}
+	//public LlvmValue visit(VarDecl n){return null;}
+	//public LlvmValue visit(MethodDecl n){return null;}
 	public LlvmValue visit(Formal n){return null;}
 	public LlvmValue visit(IntArrayType n){return null;}
-	public LlvmValue visit(BooleanType n){return null;}
-	public LlvmValue visit(IntegerType n){return null;}
+//	public LlvmValue visit(BooleanType n){return null;}
+//	public LlvmValue visit(IntegerType n){return null;}
 	public LlvmValue visit(IdentifierType n){return null;}
 //	public LlvmValue visit(Block n){return null;} // Falta testar
 //	public LlvmValue visit(If n){return null;} // OK
