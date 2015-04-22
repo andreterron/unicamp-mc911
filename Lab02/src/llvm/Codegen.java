@@ -255,6 +255,20 @@ public class Codegen extends VisitorAdapter{
 		assembler.add(new LlvmStore(exp, var));
 	   return null;
 	}
+	
+	public LlvmValue visit(ArrayAssign n){
+	   LlvmValue var = n.var.accept(this);
+   	LlvmValue index = n.index.accept(this);
+   	LlvmValue value = n.value.accept(this);
+
+		LlvmRegister lhs = new LlvmRegister(new LlvmPointer(LlvmPrimitiveType.I32));
+		List<LlvmValue> offsets = new LinkedList<LlvmValue>();
+		offsets.add(index); // Calcula offset
+		assembler.add(new LlvmGetElementPointer(lhs,var,offsets)); // Pega ponteiro para posicao desejada com offset
+		
+		assembler.add(new LlvmStore(value, lhs)); 
+	   return null;
+	}
 
 	public LlvmValue visit(Block n){
 		for (util.List<Statement> c = n.body; c != null; c = c.tail) {
@@ -276,11 +290,11 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(BooleanType n){return null;}
 	public LlvmValue visit(IntegerType n){return null;}
 	public LlvmValue visit(IdentifierType n){return null;}
-//	public LlvmValue visit(Block n){return null;}
+//	public LlvmValue visit(Block n){return null;} // Falta testar
 //	public LlvmValue visit(If n){return null;} // OK
 //	public LlvmValue visit(While n){return null;} // OK
-//	public LlvmValue visit(Assign n){return null;} // WIP
-	public LlvmValue visit(ArrayAssign n){return null;}
+//	public LlvmValue visit(Assign n){return null;} // Falta testar
+//	public LlvmValue visit(ArrayAssign n){return null;} // Falta testar
 //	public LlvmValue visit(And n){return null;} // OK
 //	public LlvmValue visit(LessThan n){return null;} OK
 //	public LlvmValue visit(Equal n){return null;} OK
