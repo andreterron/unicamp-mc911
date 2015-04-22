@@ -6,36 +6,25 @@ public  class LlvmIcmp extends LlvmInstruction{
    public LlvmValue op1, op2;
    String condition;
        
-    public LlvmIcmp(LlvmRegister lhs,  int conditionCode, LlvmType type, LlvmValue op1, LlvmValue op2){
+    public LlvmIcmp(LlvmRegister lhs, int conditionCode, LlvmType type, LlvmValue op1, LlvmValue op2){
 	   this.lhs = lhs;
 	   this.type = type;
 	   this.conditionCode = conditionCode;
 	   this.op1 = op1;
 	   this.op2 = op2;
 	
-	   switch(conditionCode) {
-         case EQ:  this.condition = "eq" ;
-                break;
-         case NE:  this.condition = "ne" ;
-                break;
-         case UGT: this.condition = "ugt";
-                break;
-         case UGE: this.condition = "uge";
-                break;
-         case ULT: this.condition = "ult";
-                break;
-         case ULE: this.condition = "ule";
-                break;
-         case SGT: this.condition = "sgt";
-                break;
-         case SGE: this.condition = "sge";
-                break;
-         case SLT: this.condition = "slt";
-                break;
-         case SLE: this.condition = "sle";
-                break;
-         default:  this.condition =  null; 
-                break;
+	   switch(this.conditionCode) {
+         case EQ:  {this.condition = "eq" ;}
+         case NE:  {this.condition = "ne" ;}
+         case UGT: {this.condition = "ugt";}
+         case UGE: {this.condition = "uge";}
+         case ULT: {this.condition = "ult";}
+         case ULE: {this.condition = "ule";}
+         case SGT: {this.condition = "sgt";}
+         case SGE: {this.condition = "sge";}
+         case SLT: {this.condition = "slt";}
+         case SLE: {this.condition = "sle";}
+         default:  {this.condition =  null;}
       }   
     }  
    

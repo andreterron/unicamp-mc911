@@ -223,6 +223,20 @@ public class Codegen extends VisitorAdapter{
 		assembler.add(new LlvmBitwiseBinary(lhs,LlvmBitwiseBinary.XOR,LlvmPrimitiveType.I1,t,v));
 		return lhs;
 	}
+	public LlvmValue visit(LessThan n){
+	   LlvmValue v1 = n.lhs.accept(this);
+		LlvmValue v2 = n.rhs.accept(this);
+		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I1);
+		assembler.add(new LlvmIcmp(lhs,LlvmIcmp.ULT,LlvmPrimitiveType.I1,v1,v2)); // Conferir se entrada ser unsigned ou signed pode ser um problema
+		return lhs;
+	}
+	public LlvmValue visit(Equal n){
+	   LlvmValue v1 = n.lhs.accept(this);
+		LlvmValue v2 = n.rhs.accept(this);
+		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I1);
+		assembler.add(new LlvmIcmp(lhs,LlvmIcmp.EQ,LlvmPrimitiveType.I1,v1,v2));
+		return lhs;
+	}
 	
 	// Todos os visit's que devem ser implementados	
 	public LlvmValue visit(ClassDeclSimple n){return null;}
@@ -240,8 +254,8 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(Assign n){return null;}
 	public LlvmValue visit(ArrayAssign n){return null;}
 //	public LlvmValue visit(And n){return null;} // OK, acima
-	public LlvmValue visit(LessThan n){return null;}
-	public LlvmValue visit(Equal n){return null;}
+//	public LlvmValue visit(LessThan n){return null;} OK, acima
+//	public LlvmValue visit(Equal n){return null;} OK, acima
 //	public LlvmValue visit(Minus n){return null;} // OK, acima
 //	public LlvmValue visit(Times n){return null;} // OK, acima
 	public LlvmValue visit(ArrayLookup n){return null;}
