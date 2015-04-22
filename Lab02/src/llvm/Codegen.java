@@ -123,22 +123,6 @@ public class Codegen extends VisitorAdapter{
 		return lhs;
 	}
 	
-	public LlvmValue visit(Minus n){
-		LlvmValue v1 = n.lhs.accept(this);
-		LlvmValue v2 = n.rhs.accept(this);
-		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I32);
-		assembler.add(new LlvmMinus(lhs,LlvmPrimitiveType.I32,v1,v2));
-		return lhs;
-	}
-	
-	public LlvmValue visit(Times n){
-		LlvmValue v1 = n.lhs.accept(this);
-		LlvmValue v2 = n.rhs.accept(this);
-		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I32);
-		assembler.add(new LlvmTimes(lhs,LlvmPrimitiveType.I32,v1,v2));
-		return lhs;
-	}
-	
 	public LlvmValue visit(Print n){
 
 		LlvmValue v =  n.exp.accept(this);
@@ -173,12 +157,6 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(IntegerLiteral n){
 		return new LlvmIntegerLiteral(n.value);
 	};
-	public LlvmValue visit(True n){
-		return new LlvmBool(LlvmBool.TRUE);
-	}
-	public LlvmValue visit(False n){
-		return new LlvmBool(LlvmBool.FALSE);
-	}
 	
 	public LlvmValue visit(If n){
 		int line = n.line;
@@ -227,6 +205,7 @@ public class Codegen extends VisitorAdapter{
 		assembler.add(new LlvmIcmp(lhs,LlvmIcmp.ULT,LlvmPrimitiveType.I32,v1,v2)); // Conferir se entrada ser unsigned ou signed pode ser um problema
 		return lhs;
 	}
+	
 	public LlvmValue visit(Equal n){
 	   LlvmValue v1 = n.lhs.accept(this);
 		LlvmValue v2 = n.rhs.accept(this);
@@ -234,7 +213,30 @@ public class Codegen extends VisitorAdapter{
 		assembler.add(new LlvmIcmp(lhs,LlvmIcmp.EQ,LlvmPrimitiveType.I32,v1,v2));
 		return lhs;
 	}
-
+	
+	public LlvmValue visit(Minus n){
+		LlvmValue v1 = n.lhs.accept(this);
+		LlvmValue v2 = n.rhs.accept(this);
+		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I32);
+		assembler.add(new LlvmMinus(lhs,LlvmPrimitiveType.I32,v1,v2));
+		return lhs;
+	}
+	
+	public LlvmValue visit(Times n){
+		LlvmValue v1 = n.lhs.accept(this);
+		LlvmValue v2 = n.rhs.accept(this);
+		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I32);
+		assembler.add(new LlvmTimes(lhs,LlvmPrimitiveType.I32,v1,v2));
+		return lhs;
+	}
+	
+	public LlvmValue visit(True n){
+		return new LlvmBool(LlvmBool.TRUE);
+	}
+	public LlvmValue visit(False n){
+		return new LlvmBool(LlvmBool.FALSE);
+	}
+	
 	public LlvmValue visit(Not n){
 		LlvmValue v = n.exp.accept(this);
 		LlvmBool t = new LlvmBool(LlvmBool.TRUE);
@@ -246,6 +248,13 @@ public class Codegen extends VisitorAdapter{
 	/**
 	 * Not tested yet
 	 */
+	 
+	public LlvmValue visit(Assign n){
+   	LlvmValue var = n.var.accept(this);
+   	LlvmValue exp = n.exp.accept(this);
+		assembler.add(new LlvmStore(exp, var));
+	   return null;
+	}
 
 	public LlvmValue visit(Block n){
 		for (util.List<Statement> c = n.body; c != null; c = c.tail) {
@@ -270,7 +279,7 @@ public class Codegen extends VisitorAdapter{
 //	public LlvmValue visit(Block n){return null;}
 //	public LlvmValue visit(If n){return null;} // OK
 //	public LlvmValue visit(While n){return null;} // OK
-	public LlvmValue visit(Assign n){return null;}
+//	public LlvmValue visit(Assign n){return null;} // WIP
 	public LlvmValue visit(ArrayAssign n){return null;}
 //	public LlvmValue visit(And n){return null;} // OK
 //	public LlvmValue visit(LessThan n){return null;} OK
