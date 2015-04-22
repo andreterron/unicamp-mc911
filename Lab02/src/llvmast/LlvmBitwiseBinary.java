@@ -15,9 +15,10 @@ public class LlvmBitwiseBinary extends LlvmInstruction{
 	   this.op2 = op2;
 	   
     	switch (this.operationCode){
-    	case AND : {this.operation = "and";}
-    	case XOR : {this.operation = "xor";}
-    		
+    	case AND : this.operation = "and";
+    	           break;
+    	case XOR : this.operation = "xor";
+    	           break;
     	}
     }
     

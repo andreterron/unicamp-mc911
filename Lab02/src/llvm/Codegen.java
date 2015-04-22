@@ -180,27 +180,6 @@ public class Codegen extends VisitorAdapter{
 		return new LlvmBool(LlvmBool.FALSE);
 	}
 	
-	/**
-	 * Not tested yet
-	 */
-	public LlvmValue visit(And n){
-		LlvmValue v1 = n.lhs.accept(this);
-		LlvmValue v2 = n.rhs.accept(this);
-		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I1);
-		assembler.add(new LlvmBitwiseBinary(lhs,LlvmBitwiseBinary.AND,LlvmPrimitiveType.I1,v1,v2));
-		return lhs;
-	}
-	
-	public LlvmValue visit(Block n){
-		for (util.List<Statement> c = n.body; c != null; c = c.tail) {
-		//for (Statement stmt : n.body.toArray()) {
-		//for (int i = 0; i < n.body.size(); i++) {
-			//Statement stmt = n.body.get(i);
-			c.head.accept(this);
-		}
-		return null;
-	}
-	
 	public LlvmValue visit(If n){
 		int line = n.line;
 		LlvmValue cmp = n.condition.accept(this);
@@ -216,6 +195,30 @@ public class Codegen extends VisitorAdapter{
 		//assembler.add(new LlvmLabel(endLabel));
 		return cmp;
 	}
+
+	public LlvmValue visit(And n){
+		LlvmValue v1 = n.lhs.accept(this);
+		LlvmValue v2 = n.rhs.accept(this);
+		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I1);
+		assembler.add(new LlvmBitwiseBinary(lhs,LlvmBitwiseBinary.AND,LlvmPrimitiveType.I1,v1,v2));
+		return lhs;
+	}	
+
+	public LlvmValue visit(LessThan n){
+	   LlvmValue v1 = n.lhs.accept(this);
+		LlvmValue v2 = n.rhs.accept(this);
+		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I32);
+		assembler.add(new LlvmIcmp(lhs,LlvmIcmp.ULT,LlvmPrimitiveType.I32,v1,v2)); // Conferir se entrada ser unsigned ou signed pode ser um problema
+		return lhs;
+	}
+	public LlvmValue visit(Equal n){
+	   LlvmValue v1 = n.lhs.accept(this);
+		LlvmValue v2 = n.rhs.accept(this);
+		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I32);
+		assembler.add(new LlvmIcmp(lhs,LlvmIcmp.EQ,LlvmPrimitiveType.I32,v1,v2));
+		return lhs;
+	}
+
 	public LlvmValue visit(Not n){
 		LlvmValue v = n.exp.accept(this);
 		LlvmBool t = new LlvmBool(LlvmBool.TRUE);
@@ -223,19 +226,19 @@ public class Codegen extends VisitorAdapter{
 		assembler.add(new LlvmBitwiseBinary(lhs,LlvmBitwiseBinary.XOR,LlvmPrimitiveType.I1,t,v));
 		return lhs;
 	}
-	public LlvmValue visit(LessThan n){
-	   LlvmValue v1 = n.lhs.accept(this);
-		LlvmValue v2 = n.rhs.accept(this);
-		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I1);
-		assembler.add(new LlvmIcmp(lhs,LlvmIcmp.ULT,LlvmPrimitiveType.I1,v1,v2)); // Conferir se entrada ser unsigned ou signed pode ser um problema
-		return lhs;
-	}
-	public LlvmValue visit(Equal n){
-	   LlvmValue v1 = n.lhs.accept(this);
-		LlvmValue v2 = n.rhs.accept(this);
-		LlvmRegister lhs = new LlvmRegister(LlvmPrimitiveType.I1);
-		assembler.add(new LlvmIcmp(lhs,LlvmIcmp.EQ,LlvmPrimitiveType.I1,v1,v2));
-		return lhs;
+		
+	/**
+	 * Not tested yet
+	 */
+
+	public LlvmValue visit(Block n){
+		for (util.List<Statement> c = n.body; c != null; c = c.tail) {
+		//for (Statement stmt : n.body.toArray()) {
+		//for (int i = 0; i < n.body.size(); i++) {
+			//Statement stmt = n.body.get(i);
+			c.head.accept(this);
+		}
+		return null;
 	}
 	
 	// Todos os visit's que devem ser implementados	
