@@ -294,22 +294,37 @@ public class Codegen extends VisitorAdapter{
 	}
 	
 	public LlvmValue visit(ClassDeclSimple n){
-		
 		List<LlvmType> types = new LinkedList();
+		List<LlvmValue> vars = new LinkedList();
+		LlvmValue val;
 		for (util.List<VarDecl> c = n.varList; c != null; c = c.tail) {
-			types.add(c.head.accept(this).type);
+			val = c.head.accept(this);
+			vars.add(val);
+			types.add(val.type);
 		}
-		
+		classEnv = new ClassNode(n.name.s, new LlvmStructure(types), vars);
 		assembler.add(new LlvmClassDeclaration(new LlvmClassType(n.name.s), types));
 		for (util.List<MethodDecl> c = n.methodList; c != null; c = c.tail) {
-		//for (Statement stmt : n.body.toArray()) {
-		//for (int i = 0; i < n.body.size(); i++) {
-			//Statement stmt = n.body.get(i);
 			c.head.accept(this);
 		}
-		//for (MethodDecl method : n.methodList) {
-		//	method.accept(this);
-		//}
+		return null;
+	}
+	
+	
+	public LlvmValue visit(ClassDeclExtends n){
+		List<LlvmType> types = new LinkedList();
+		List<LlvmValue> vars = new LinkedList();
+		LlvmValue val;
+		for (util.List<VarDecl> c = n.varList; c != null; c = c.tail) {
+			val = c.head.accept(this);
+			vars.add(val);
+			types.add(val.type);
+		}
+		classEnv = new ClassNode(n.name.s, new LlvmStructure(types), vars);
+		assembler.add(new LlvmClassDeclaration(new LlvmClassType(n.name.s), types, new LlvmClassType(n.superClass.s)));
+		for (util.List<MethodDecl> c = n.methodList; c != null; c = c.tail) {
+			c.head.accept(this);
+		}
 		return null;
 	}
 	
@@ -319,8 +334,17 @@ public class Codegen extends VisitorAdapter{
 	
 	public LlvmValue visit(MethodDecl n){
 		LlvmType resultType = n.returnType.accept(this).type;
-		
-		assembler.add(new LlvmDefine("@__" + n.name.s, resultType, new LinkedList()));
+		List<LlvmValue> formals = new LinkedList<LlvmValue>();
+		formals.add(new LlvmNamedValue("%this", new LlvmClassType(classEnv.name)));
+		for (util.List<Formal> c = n.formals; c != null; c = c.tail) {
+			formals.add(new LlvmNamedValue("%" + c.head.name.s, c.head.type.accept(this).type));
+		}
+		assembler.add(new LlvmDefine("@__" + n.name.s + "_" + classEnv.name, resultType, formals));
+		for (util.List<Statement> c = n.body; c != null; c = c.tail) {
+			c.head.accept(this);
+		}
+		LlvmValue v = n.returnExp.accept(this);
+		assembler.add(new LlvmRet(v));
 		assembler.add(new LlvmCloseDefinition());
 		return null;
 	}
@@ -334,14 +358,14 @@ public class Codegen extends VisitorAdapter{
 	}
 	
 	// Todos os visit's que devem ser implementados	
-	//public LlvmValue visit(ClassDeclSimple n){return null;}
-	public LlvmValue visit(ClassDeclExtends n){return null;}
-	//public LlvmValue visit(VarDecl n){return null;}
-	//public LlvmValue visit(MethodDecl n){return null;}
+	//public LlvmValue visit(ClassDeclSimple n){return null;} // OK
+	//public LlvmValue visit(ClassDeclExtends n){return null;} // OK
+	//public LlvmValue visit(VarDecl n){return null;} // OK
+	//public LlvmValue visit(MethodDecl n){return null;} // WIP
 	public LlvmValue visit(Formal n){return null;}
 	public LlvmValue visit(IntArrayType n){return null;}
-//	public LlvmValue visit(BooleanType n){return null;}
-//	public LlvmValue visit(IntegerType n){return null;}
+//	public LlvmValue visit(BooleanType n){return null;} // OK
+//	public LlvmValue visit(IntegerType n){return null;} // OK
 	public LlvmValue visit(IdentifierType n){return null;}
 //	public LlvmValue visit(Block n){return null;} // Falta testar
 //	public LlvmValue visit(If n){return null;} // OK
@@ -375,41 +399,41 @@ public class Codegen extends VisitorAdapter{
 /**********************************************************************************/
 
 class SymTab extends VisitorAdapter{
-    public Map<String, ClassNode> classes;     
-    private ClassNode classEnv;    //aponta para a classe em uso
+	public Map<String, ClassNode> classes;     
+	private ClassNode classEnv;    //aponta para a classe em uso
 
-    public LlvmValue FillTabSymbol(Program n){
-	n.accept(this);
-	return null;
-}
-public LlvmValue visit(Program n){
-	n.mainClass.accept(this);
+	public LlvmValue FillTabSymbol(Program n){
+		n.accept(this);
+		return null;
+	}
+	public LlvmValue visit(Program n){
+		n.mainClass.accept(this);
 
-	for (util.List<ClassDecl> c = n.classList; c != null; c = c.tail)
-		c.head.accept(this);
+		for (util.List<ClassDecl> c = n.classList; c != null; c = c.tail)
+			c.head.accept(this);
 
-	return null;
-}
+		return null;
+	}
 
-public LlvmValue visit(MainClass n){
-	classes.put(n.className.s, new ClassNode(n.className.s, null, null));
-	return null;
-}
+	public LlvmValue visit(MainClass n){
+		classes.put(n.className.s, new ClassNode(n.className.s, null, null));
+		return null;
+	}
 
-public LlvmValue visit(ClassDeclSimple n){
-	List<LlvmType> typeList = null;
-	// Constroi TypeList com os tipos das variáveis da Classe (vai formar a Struct da classe)
-	
-	List<LlvmValue> varList = null;
-	// Constroi VarList com as Variáveis da Classe
+	public LlvmValue visit(ClassDeclSimple n){
+		List<LlvmType> typeList = null;
+		// Constroi TypeList com os tipos das variáveis da Classe (vai formar a Struct da classe)
+		
+		List<LlvmValue> varList = null;
+		// Constroi VarList com as Variáveis da Classe
 
-	classes.put(n.name.s, new ClassNode(n.name.s, 
-										new LlvmStructure(typeList), 
-										varList)
-      			);
-    	// Percorre n.methodList visitando cada método
-	return null;
-}
+		classes.put(n.name.s, new ClassNode(n.name.s, 
+											new LlvmStructure(typeList), 
+											varList)
+					);
+			// Percorre n.methodList visitando cada método
+		return null;
+	}
 
 	public LlvmValue visit(ClassDeclExtends n){return null;}
 	public LlvmValue visit(VarDecl n){return null;}
@@ -422,7 +446,18 @@ public LlvmValue visit(ClassDeclSimple n){
 }
 
 class ClassNode extends LlvmType {
+	public String name;
+	public LlvmStructure structure;
+	public List<LlvmValue> vars;
 	ClassNode (String nameClass, LlvmStructure classType, List<LlvmValue> varList){
+		name = nameClass;
+		structure = classType;
+		vars = varList;
+	}
+	
+	public String toString() {
+		//%class.Conta = type { i32, i32 }
+		return "%class." + name + " = type " + structure;
 	}
 }
 
