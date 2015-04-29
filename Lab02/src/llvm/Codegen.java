@@ -412,6 +412,11 @@ public class Codegen extends VisitorAdapter{
 	}
 
 	public LlvmValue visit(IntArrayType n){
+	   
+/*	   LlvmRegister reg = new LlvmRegister(new LlvmPointer(LlvmPrimitiveType.I32));
+	   	
+	   assembler.add(new LlvmAlloca(reg, LlvmPrimitiveType.I32, new LinkedList<LlvmValue>()));
+*/	   
 		return new LlvmNamedValue("int[]", LlvmPrimitiveType.I32);
 	}
 	
@@ -461,16 +466,16 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(NewArray n){
 	
 	   LlvmValue size = n.size.accept(this);
-
 	
       LlvmRegister reg = new LlvmRegister(new LlvmPointer(LlvmPrimitiveType.I32));
 	   	
 	   assembler.add(new LlvmAlloca(reg, new LlvmInt("[" + size + " x " + LlvmPrimitiveType.I32 + "]"), new LinkedList<LlvmValue>()));
-// return reg;
+      
+      return reg;
 
 //	   assembler.add(new LlvmAlloca(reg, new LlvmArrayValue(n.size.accept(this), LlvmPrimitiveType.I32), new LinkedList<LlvmValue>()));
 //	   return new LlvmArrayValue(n.size.accept(this), LlvmPrimitiveType.I32);
-      return size
+//      return size;
 	}
 
 	public LlvmValue visit(Identifier n){
