@@ -254,8 +254,6 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(Assign n){
 		LlvmValue var = n.var.accept(this);
 		LlvmValue exp = n.exp.accept(this);
-		
-		
 
 		//LlvmRegister lhs = new LlvmRegister(new LlvmPointer(LlvmPrimitiveType.I32));
 		//List<LlvmValue> offsets = new LinkedList<LlvmValue>();
@@ -476,11 +474,7 @@ public class Codegen extends VisitorAdapter{
 	   	
 	   assembler.add(new LlvmAlloca(reg, new LlvmInt("[" + size + " x " + LlvmPrimitiveType.I32 + "]"), new LinkedList<LlvmValue>()));
       
-      return reg;
-
-//	   assembler.add(new LlvmAlloca(reg, new LlvmArrayValue(n.size.accept(this), LlvmPrimitiveType.I32), new LinkedList<LlvmValue>()));
-//	   return new LlvmArrayValue(n.size.accept(this), LlvmPrimitiveType.I32);
-//      return size;
+      return size; // Ver se deve retornar size ou reg
 	}
 
 	public LlvmValue visit(Identifier n){
@@ -504,6 +498,12 @@ public class Codegen extends VisitorAdapter{
 				args));
 		return reg;
 	}
+	
+	public LlvmValue visit(ArrayLength n){
+	   LlvmValue array = n.array.accept(this);
+	   
+	   return array;
+	}
 
 	// Todos os visit's que devem ser implementados	
 	//public LlvmValue visit(ClassDeclSimple n){return null;} // OK
@@ -526,13 +526,13 @@ public class Codegen extends VisitorAdapter{
 //	public LlvmValue visit(Minus n){return null;} // OK
 //	public LlvmValue visit(Times n){return null;} // OK
 //	public LlvmValue visit(ArrayLookup n){return null;} // Falta testar
-	public LlvmValue visit(ArrayLength n){return null;}
+//	public LlvmValue visit(ArrayLength n){return null;}
 //	public LlvmValue visit(Call n){return null;} // Falta testar
 //	public LlvmValue visit(True n){return null;} // OK
 //	public LlvmValue visit(False n){return null;} // OK
 //	public LlvmValue visit(IdentifierExp n){return null;} // WIP
 //	public LlvmValue visit(This n){return null;} // Falta testar
-//	public LlvmValue visit(NewArray n){return null;} // Falta testar
+//	public LlvmValue visit(NewArray n){return null;} // Verificar retorno
 //	public LlvmValue visit(NewObject n){return null;} // Falta testar mais
 //	public LlvmValue visit(Not n){return null;} // OK
 //	public LlvmValue visit(Identifier n){return null;} // WIP
@@ -583,7 +583,14 @@ class SymTab extends VisitorAdapter{
 		return null;
 	}
 
-	public LlvmValue visit(ClassDeclExtends n){return null;}
+	public LlvmValue visit(ClassDeclExtends n){
+  		List<LlvmType> typeList = null;
+   	List<LlvmValue> varList = null;
+		classes.put(n.name.s, new ClassNode(n.name.s, 
+											new LlvmStructure(typeList), 
+											varList)
+					);
+	return null;}
 	public LlvmValue visit(VarDecl n){return null;}
 	public LlvmValue visit(Formal n){return null;}
 	public LlvmValue visit(MethodDecl n){return null;}
