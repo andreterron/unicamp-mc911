@@ -260,7 +260,7 @@ public class Codegen extends VisitorAdapter{
 		//offsets.add(index); // Calcula offset
 		//assembler.add(new LlvmGetElementPointer(lhs,var,offsets)); // Pega ponteiro para posicao desejada com offset
 		
-		assembler.add(new LlvmStore(exp, new LlvmNamedValue("%" + var.toString(), var.type))); 
+		assembler.add(new LlvmStore(exp, new LlvmNamedValue("%" + var.toString(), new LlvmPointer(var.type)))); 
 		return null;
 		//LlvmValue var = n.var.accept(this);
 		//LlvmValue exp = n.exp.accept(this);
@@ -347,7 +347,10 @@ public class Codegen extends VisitorAdapter{
 		// TODO : do not add to assembler if it's a class field
 		LlvmNamedValue val = new LlvmNamedValue("%" + n.name.s, n.type.accept(this).type);
 		
-		assembler.add(new LlvmAlloca(val, n.type.accept(this).type, new LinkedList<LlvmValue>()));
+		
+		if (methodEnv != null) {
+			assembler.add(new LlvmAlloca(val, n.type.accept(this).type, new LinkedList<LlvmValue>()));
+		}
 		//assembler.add(
 		return val;
 	}
@@ -363,14 +366,14 @@ public class Codegen extends VisitorAdapter{
 			formals.add(c.head.accept(this)); //new LlvmNamedValue("%" + c.head.name.s, c.head.type.accept(this).type));
 		}
 		assembler.add(new LlvmDefine("@__" + n.name.s + "_" + classEnv.name, resultType, formals));
-		
+		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
 		
 		Map<String, LlvmValue> locals = new HashMap();   
+		methodEnv = new MethodNode(n.name.s, locals);
 		for (util.List<VarDecl> c = n.locals; c != null; c = c.tail) {
 			//assembler.add(c.head.accept(this));
 			locals.put(c.head.accept(this).toString(), null);
 		}
-		methodEnv = new MethodNode(n.name.s, locals);
 		
 		
 		for (util.List<Statement> c = n.body; c != null; c = c.tail) {
@@ -379,6 +382,7 @@ public class Codegen extends VisitorAdapter{
 		LlvmValue v = n.returnExp.accept(this);
 		assembler.add(new LlvmRet(v));
 		assembler.add(new LlvmCloseDefinition());
+		methodEnv = null;
 		return null;
 	}
 
@@ -406,7 +410,7 @@ public class Codegen extends VisitorAdapter{
 		//LlvmValue val = n.accept(this);
 		
 		LlvmRegister reg = new LlvmRegister(LlvmPrimitiveType.I32);
-		assembler.add(new LlvmLoad(reg, new LlvmNamedValue("%" + n.name.s, LlvmPrimitiveType.I32)));
+		assembler.add(new LlvmLoad(reg, new LlvmNamedValue("%" + n.name.s, new LlvmPointer(LlvmPrimitiveType.I32))));
 		
 		return reg;
 	}
