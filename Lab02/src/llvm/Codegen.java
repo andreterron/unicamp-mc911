@@ -411,7 +411,23 @@ public class Codegen extends VisitorAdapter{
 		return reg;
 	}
 	
-	
+	public LlvmValue visit(Call n){
+		//LlvmValue object = n.object.accept(this);
+		//LlvmValue method = n.method.accept(this);
+//		List<LlvmValue> actuals = n.actuals.accept(this);
+		
+		List<LlvmValue> actuals = new LinkedList<LlvmValue>();
+		for (; n.actuals != null; n.actuals = n.actuals.tail) {
+			actuals.add(n.actuals.head.accept(this));
+		}
+
+      LlvmRegister reg = new LlvmRegister(LlvmPrimitiveType.I32);
+      
+      assembler.add(new LlvmCall(reg, LlvmPrimitiveType.I32, "@__" + n.method.s, actuals));
+
+	   return reg;
+	}
+		
 	public LlvmValue visit(Identifier n){
 		return new LlvmNamedValue(n.s, LlvmPrimitiveType.I32);
 	}
@@ -438,7 +454,7 @@ public class Codegen extends VisitorAdapter{
 //	public LlvmValue visit(Times n){return null;} // OK
 //	public LlvmValue visit(ArrayLookup n){return null;} // Falta testar
 	public LlvmValue visit(ArrayLength n){return null;}
-	public LlvmValue visit(Call n){return null;}
+//	public LlvmValue visit(Call n){return null;} // wip
 //	public LlvmValue visit(True n){return null;} // OK
 //	public LlvmValue visit(False n){return null;} // OK
 //	public LlvmValue visit(IdentifierExp n){return null;} // WIP
