@@ -3,3 +3,4 @@ teste.s
 *.class
 error.txt
 output.txt
+out/

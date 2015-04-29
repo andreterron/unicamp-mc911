@@ -1,11 +1,11 @@
 
 if [ -z $1 ]; then
-  path=test/smaller
+  path=test/smaller/*
 else
   path=$1
 fi
 
-FILES=$path/*
+FILES=$path
 
 make
 count=0
@@ -14,11 +14,17 @@ echo "" > output.txt
 echo "" > error.txt
 for f in $FILES
 do
-  #echo "Processing $f file..."
-  
+  echo "------------------------------" >> output.txt
+  echo "| Processing $f" >> output.txt
+  echo "------------------------------" >> output.txt
+  echo "------------------------------" >> error.txt
+  echo "| Processing $f" >> error.txt
+  echo "------------------------------" >> error.txt
+  filename="${f%.*}"
+  out=out/$filename.s
   RES=0
-  make run INPUT=$f OUTPUT=teste.s >> output.txt 2>> error.txt &&
-  lli teste.s >> output.txt 2>> error.txt &&
+  make run INPUT=$f OUTPUT=$out >> output.txt 2>> error.txt &&
+  lli $out >> output.txt 2>> error.txt &&
   RES=1 && ((correct+=1))
   if [ $RES == 0 ]; then
 	echo "TEST $f FAILED"

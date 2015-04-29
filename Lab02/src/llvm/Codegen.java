@@ -254,14 +254,55 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(Assign n){
 		LlvmValue var = n.var.accept(this);
 		LlvmValue exp = n.exp.accept(this);
+		
+		
+		LlvmRegister reg = new LlvmRegister(LlvmPrimitiveType.I32);
+		
+		LlvmValue result = null;
+		if (methodEnv != null) {
+			if (methodEnv.locals.containsKey(var.toString())) {
+				LlvmValue local = methodEnv.locals.get(var.toString());
+				//c.head.accept(this);
+				if (local.toString().equals(var.toString())) {
+					//assembler.add(new LlvmLoad(reg, new LlvmNamedValue("%" + var.toString(), new LlvmPointer(LlvmPrimitiveType.I32))));
+					assembler.add(new LlvmStore(exp, new LlvmNamedValue("%" + var.toString(), new LlvmPointer(var.type)))); 
+					return reg;
+					//return new LlvmNamedValue(var.toString(), local.type);
+				}
+			}
+		}
+		if (classEnv != null) {
+			int i = 0;
+			for (LlvmValue c : classEnv.vars) {
+				i++;
+				//c.head.accept(this);
+				if (c.toString().equals(var.toString())) {
+					List<LlvmValue> offsets = new LinkedList<LlvmValue>();
+					offsets.add(new LlvmNamedValue("0", LlvmPrimitiveType.I32));
+					offsets.add(new LlvmNamedValue("" + i, LlvmPrimitiveType.I32));
+					assembler.add(new LlvmGetElementPointer(reg, classEnv.value, offsets));
+					assembler.add(new LlvmStore(exp, new LlvmNamedValue("%" + var.toString(), new LlvmPointer(var.type)))); 
+					return reg;
+					//new LlvmNamedValue(var.toString(), c.head.type);
+				}
+			}
+		}
+		System.out.println("Failed to assign here");
+		return reg;
 
 		//LlvmRegister lhs = new LlvmRegister(new LlvmPointer(LlvmPrimitiveType.I32));
 		//List<LlvmValue> offsets = new LinkedList<LlvmValue>();
 		//offsets.add(index); // Calcula offset
 		//assembler.add(new LlvmGetElementPointer(lhs,var,offsets)); // Pega ponteiro para posicao desejada com offset
 		
-		assembler.add(new LlvmStore(exp, new LlvmNamedValue("%" + var.toString(), new LlvmPointer(var.type)))); 
-		return null;
+		//assembler.add(new LlvmStore(exp, new LlvmNamedValue("%" + var.toString(), new LlvmPointer(var.type)))); 
+		//return null;
+		
+		
+		
+		
+		
+		
 		//LlvmValue var = n.var.accept(this);
 		//LlvmValue exp = n.exp.accept(this);
 		//methodEnv.locals.put(n.var.s, exp);
@@ -381,10 +422,13 @@ public class Codegen extends VisitorAdapter{
 	
 		// TODO : alloc memory to method parameters (formals)
 		LlvmType resultType = n.returnType.accept(this).type;
+		Map<String, LlvmValue> locals = new HashMap();
 		List<LlvmValue> formals = new LinkedList<LlvmValue>();
 		formals.add(new LlvmNamedValue("%this", new LlvmPointer(new LlvmClassType(classEnv.name))));
 		for (util.List<Formal> c = n.formals; c != null; c = c.tail) {
-			formals.add(c.head.accept(this)); //new LlvmNamedValue("%" + c.head.name.s, c.head.type.accept(this).type));
+			LlvmValue var = c.head.accept(this);
+			formals.add(var); //new LlvmNamedValue("%" + c.head.name.s, c.head.type.accept(this).type));
+			locals.put(var.toString(), var);
 		}
 		if (resultType instanceof LlvmClassType) {
 			resultType = new LlvmPointer(resultType);
@@ -392,7 +436,6 @@ public class Codegen extends VisitorAdapter{
 		assembler.add(new LlvmDefine("@__" + n.name.s + "_" + classEnv.name, resultType, formals));
 		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
 		
-		Map<String, LlvmValue> locals = new HashMap();   
 		methodEnv = new MethodNode(n.name.s, locals);
 		for (util.List<VarDecl> c = n.locals; c != null; c = c.tail) {
 			//assembler.add(c.head.accept(this));
@@ -436,11 +479,36 @@ public class Codegen extends VisitorAdapter{
 	}	
 	
 	public LlvmValue visit(IdentifierExp n){
-		//LlvmValue val = n.accept(this);
-		
 		LlvmRegister reg = new LlvmRegister(LlvmPrimitiveType.I32);
-		assembler.add(new LlvmLoad(reg, new LlvmNamedValue("%" + n.name.s, new LlvmPointer(LlvmPrimitiveType.I32))));
 		
+		LlvmValue result = null;
+		if (methodEnv != null) {
+			if (methodEnv.locals.containsKey(n.name.s)) {
+				LlvmValue local = methodEnv.locals.get(n.name.s);
+				//c.head.accept(this);
+				if (local.toString().equals(n.name.s)) {
+					assembler.add(new LlvmLoad(reg, new LlvmNamedValue("%" + n.name.s, new LlvmPointer(LlvmPrimitiveType.I32))));
+					//return new LlvmNamedValue(n.name.s, local.type);
+				}
+			}
+		}
+		if (classEnv != null) {
+			int i = 0;
+			for (LlvmValue c : classEnv.vars) {
+				i++;
+				//c.head.accept(this);
+				if (c.toString().equals(n.name.s)) {
+					List<LlvmValue> offsets = new LinkedList<LlvmValue>();
+					offsets.add(new LlvmNamedValue("0", LlvmPrimitiveType.I32));
+					offsets.add(new LlvmNamedValue("" + i, LlvmPrimitiveType.I32));
+					LlvmRegister ptr = new LlvmRegister(LlvmPrimitiveType.I32);
+					assembler.add(new LlvmGetElementPointer(ptr, classEnv.value, offsets));
+					assembler.add(new LlvmLoad(reg, ptr));
+					//return reg;
+					//new LlvmNamedValue(n.name.s, c.head.type);
+				}
+			}
+		}
 		return reg;
 	}
 	
@@ -463,7 +531,7 @@ public class Codegen extends VisitorAdapter{
 	}
 
 	public LlvmValue visit(This n){
-	   return new LlvmNamedValue("this", LlvmPrimitiveType.I32);
+	   return new LlvmNamedValue("%this", new LlvmPointer(classEnv));
 	}
 
 	public LlvmValue visit(NewArray n){
@@ -485,7 +553,7 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(NewObject n){
 		//n.className
 		
-		List<LlvmValue> args = new ArrayList<LlvmValue>();
+		List<LlvmValue> args = new LinkedList<LlvmValue>();
 		
 		LlvmRegister reg = new LlvmRegister(new LlvmPointer(new LlvmClassType(n.className.s)));
 		args.add(reg);
@@ -604,15 +672,17 @@ class ClassNode extends LlvmType {
 	public String name;
 	public LlvmStructure structure;
 	public List<LlvmValue> vars;
+	public LlvmNamedValue value;
 	ClassNode (String nameClass, LlvmStructure classType, List<LlvmValue> varList){
 		name = nameClass;
 		structure = classType;
 		vars = varList;
+		value = new LlvmNamedValue(nameClass, classType);
 	}
 	
 	public String toString() {
 		//%class.Conta = type { i32, i32 }
-		return "%class." + name + " = type " + structure;
+		return "%class." + name;
 	}
 }
 
