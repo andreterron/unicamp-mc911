@@ -344,7 +344,6 @@ public class Codegen extends VisitorAdapter{
 	}
 
 	public LlvmValue visit(VarDecl n) {
-		// TODO : do not add to assembler if it's a class field
 		LlvmNamedValue val = new LlvmNamedValue("%" + n.name.s, n.type.accept(this).type);
 		
 		
@@ -403,7 +402,7 @@ public class Codegen extends VisitorAdapter{
 	}
 	
 	public LlvmValue visit(IdentifierType n){
-		return new LlvmNamedValue(n.name, LlvmPrimitiveType.I32);
+		return new LlvmNamedValue(n.name, new LlvmClassType(n.name));
 	}	
 	
 	public LlvmValue visit(IdentifierExp n){
