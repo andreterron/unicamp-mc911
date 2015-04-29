@@ -95,6 +95,8 @@ public class Codegen extends VisitorAdapter{
 	}
 
 	public LlvmValue visit(MainClass n){
+		//className
+		assembler.add(new LlvmClassDeclaration(new LlvmClassType(n.className.s), new LinkedList<LlvmType>()));
 		
 		// definicao do main 
 		assembler.add(new LlvmDefine("@main", LlvmPrimitiveType.I32, new LinkedList<LlvmValue>()));
@@ -325,7 +327,7 @@ public class Codegen extends VisitorAdapter{
 		List<LlvmValue> args = new LinkedList<LlvmValue>();
 		args.add(new LlvmNamedValue("%this", new LlvmPointer(new LlvmClassType(n.name.s))));
 		
-		assembler.add(new LlvmDefine("@__" + n.name + "_" + n.name, LlvmPrimitiveType.VOID, args));
+		assembler.add(new LlvmDefine("@__" + n.name, LlvmPrimitiveType.VOID, args));
 		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
 		assembler.add(new LlvmRet(new LlvmNamedValue("", LlvmPrimitiveType.VOID)));
 		assembler.add(new LlvmCloseDefinition());
@@ -354,9 +356,9 @@ public class Codegen extends VisitorAdapter{
 		List<LlvmValue> args = new LinkedList<LlvmValue>();
 		args.add(new LlvmNamedValue("%this", new LlvmPointer(new LlvmClassType(n.name.s))));
 		
-		assembler.add(new LlvmDefine("@__" + n.name + "_" + n.name, LlvmPrimitiveType.VOID, args));
+		assembler.add(new LlvmDefine("@__" + n.name, LlvmPrimitiveType.VOID, args));
 		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
-		assembler.add(new LlvmRet(new LlvmNamedValue("void", LlvmPrimitiveType.VOID)));
+		assembler.add(new LlvmRet(new LlvmNamedValue("", LlvmPrimitiveType.VOID)));
 		assembler.add(new LlvmCloseDefinition());
 		
 		for (util.List<MethodDecl> c = n.methodList; c != null; c = c.tail) {
@@ -385,6 +387,9 @@ public class Codegen extends VisitorAdapter{
 		formals.add(new LlvmNamedValue("%this", new LlvmPointer(new LlvmClassType(classEnv.name))));
 		for (util.List<Formal> c = n.formals; c != null; c = c.tail) {
 			formals.add(c.head.accept(this)); //new LlvmNamedValue("%" + c.head.name.s, c.head.type.accept(this).type));
+		}
+		if (resultType instanceof LlvmClassType) {
+			resultType = new LlvmPointer(resultType);
 		}
 		assembler.add(new LlvmDefine("@__" + n.name.s + "_" + classEnv.name, resultType, formals));
 		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
@@ -486,7 +491,7 @@ public class Codegen extends VisitorAdapter{
 		assembler.add(new LlvmCall(
 				reg2,
 				LlvmPrimitiveType.VOID,
-				"@__" + n.className + "_" + n.className,
+				"@__" + n.className,
 				args));
 		return reg;
 	}

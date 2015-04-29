@@ -23,7 +23,7 @@ public class LlvmClassDeclaration extends LlvmInstruction {
 		//%class.Conta = type { i32, i32 }
 
 		//String f = StringUtils.join(fields, ", ");
-		String result = classType + " = type { ";
+		String result = "\n" + classType + " = type { ";
 		int join = 0;
 		if (superClass != null) {
 			result += superClass;
