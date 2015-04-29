@@ -319,6 +319,17 @@ public class Codegen extends VisitorAdapter{
 		}
 		classEnv = new ClassNode(n.name.s, new LlvmStructure(types), vars);
 		assembler.add(new LlvmClassDeclaration(new LlvmClassType(n.name.s), types));
+		
+		
+		// Constructor
+		List<LlvmValue> args = new LinkedList<LlvmValue>();
+		args.add(new LlvmNamedValue("%this", new LlvmPointer(new LlvmClassType(n.name.s))));
+		
+		assembler.add(new LlvmDefine("@__" + n.name + "_" + n.name, LlvmPrimitiveType.VOID, args));
+		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
+		assembler.add(new LlvmRet(new LlvmNamedValue("", LlvmPrimitiveType.VOID)));
+		assembler.add(new LlvmCloseDefinition());
+		
 		for (util.List<MethodDecl> c = n.methodList; c != null; c = c.tail) {
 			c.head.accept(this);
 		}
@@ -336,7 +347,18 @@ public class Codegen extends VisitorAdapter{
 			types.add(val.type);
 		}
 		classEnv = new ClassNode(n.name.s, new LlvmStructure(types), vars);
+		// Structure
 		assembler.add(new LlvmClassDeclaration(new LlvmClassType(n.name.s), types, new LlvmClassType(n.superClass.s)));
+		
+		// Constructor
+		List<LlvmValue> args = new LinkedList<LlvmValue>();
+		args.add(new LlvmNamedValue("%this", new LlvmPointer(new LlvmClassType(n.name.s))));
+		
+		assembler.add(new LlvmDefine("@__" + n.name + "_" + n.name, LlvmPrimitiveType.VOID, args));
+		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
+		assembler.add(new LlvmRet(new LlvmNamedValue("void", LlvmPrimitiveType.VOID)));
+		assembler.add(new LlvmCloseDefinition());
+		
 		for (util.List<MethodDecl> c = n.methodList; c != null; c = c.tail) {
 			c.head.accept(this);
 		}
@@ -360,7 +382,7 @@ public class Codegen extends VisitorAdapter{
 		// TODO : alloc memory to method parameters (formals)
 		LlvmType resultType = n.returnType.accept(this).type;
 		List<LlvmValue> formals = new LinkedList<LlvmValue>();
-		formals.add(new LlvmNamedValue("%this", new LlvmClassType(classEnv.name)));
+		formals.add(new LlvmNamedValue("%this", new LlvmPointer(new LlvmClassType(classEnv.name))));
 		for (util.List<Formal> c = n.formals; c != null; c = c.tail) {
 			formals.add(c.head.accept(this)); //new LlvmNamedValue("%" + c.head.name.s, c.head.type.accept(this).type));
 		}
@@ -416,13 +438,18 @@ public class Codegen extends VisitorAdapter{
 	
 	public LlvmValue visit(Call n){
 		List<LlvmValue> actuals = new LinkedList<LlvmValue>();
+		LlvmValue obj = n.object.accept(this);
+		actuals.add(obj);
 		for (; n.actuals != null; n.actuals = n.actuals.tail) {
 			actuals.add(n.actuals.head.accept(this));
 		}
 
       LlvmRegister reg = new LlvmRegister(LlvmPrimitiveType.I32);
       
-      assembler.add(new LlvmCall(reg, LlvmPrimitiveType.I32, "@__" + n.method.s, actuals));
+      LlvmClassType type = (LlvmClassType) ((LlvmPointer) obj.type).content;
+      
+      
+      assembler.add(new LlvmCall(reg, LlvmPrimitiveType.I32, "@__" + n.method.s + "_" + type.name, actuals));
 
 	   return reg;
 	}
@@ -445,9 +472,27 @@ public class Codegen extends VisitorAdapter{
 //	   return new LlvmArrayValue(n.size.accept(this), LlvmPrimitiveType.I32);
       return size
 	}
-		
+
 	public LlvmValue visit(Identifier n){
 		return new LlvmNamedValue(n.s, LlvmPrimitiveType.I32);
+	}
+
+
+	public LlvmValue visit(NewObject n){
+		//n.className
+		
+		List<LlvmValue> args = new ArrayList<LlvmValue>();
+		
+		LlvmRegister reg = new LlvmRegister(new LlvmPointer(new LlvmClassType(n.className.s)));
+		args.add(reg);
+		LlvmRegister reg2 = new LlvmRegister(new LlvmPointer(new LlvmClassType(n.className.s)));
+		assembler.add(new LlvmAlloca(reg, n.type.accept(this).type, new LinkedList<LlvmValue>()));
+		assembler.add(new LlvmCall(
+				reg2,
+				LlvmPrimitiveType.VOID,
+				"@__" + n.className + "_" + n.className,
+				args));
+		return reg;
 	}
 
 	// Todos os visit's que devem ser implementados	
@@ -478,7 +523,7 @@ public class Codegen extends VisitorAdapter{
 //	public LlvmValue visit(IdentifierExp n){return null;} // WIP
 //	public LlvmValue visit(This n){return null;} // Falta testar
 //	public LlvmValue visit(NewArray n){return null;} // Falta testar
-	public LlvmValue visit(NewObject n){return null;}
+//	public LlvmValue visit(NewObject n){return null;} // Falta testar mais
 //	public LlvmValue visit(Not n){return null;} // OK
 //	public LlvmValue visit(Identifier n){return null;} // WIP
 }
