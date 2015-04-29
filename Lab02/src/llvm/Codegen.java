@@ -386,6 +386,10 @@ public class Codegen extends VisitorAdapter{
 		return new LlvmNamedValue("%" + n.name.s, n.type.accept(this).type);
 	}
 
+	public LlvmValue visit(IntArrayType n){
+		return new LlvmNamedValue("int[]", LlvmPrimitiveType.I32);
+	}
+	
 	public LlvmValue visit(BooleanType n){
 		return new LlvmNamedValue("boolean", LlvmPrimitiveType.I1);
 	}
@@ -394,6 +398,9 @@ public class Codegen extends VisitorAdapter{
 		return new LlvmNamedValue("int", LlvmPrimitiveType.I32);
 	}
 	
+	public LlvmValue visit(IdentifierType n){
+		return new LlvmNamedValue(n.name, LlvmPrimitiveType.I32);
+	}	
 	
 	public LlvmValue visit(IdentifierExp n){
 		//LlvmValue val = n.accept(this);
@@ -415,18 +422,18 @@ public class Codegen extends VisitorAdapter{
 	//public LlvmValue visit(VarDecl n){return null;} // OK
 	//public LlvmValue visit(MethodDecl n){return null;} // WIP
 	//public LlvmValue visit(Formal n){return null;} // OK
-	public LlvmValue visit(IntArrayType n){return null;}
+	//public LlvmValue visit(IntArrayType n){return null;} // Falta testar
 //	public LlvmValue visit(BooleanType n){return null;} // OK
 //	public LlvmValue visit(IntegerType n){return null;} // OK
-	public LlvmValue visit(IdentifierType n){return null;}
+//	public LlvmValue visit(IdentifierType n){return null;} // Falta testar
 //	public LlvmValue visit(Block n){return null;} // Falta testar
 //	public LlvmValue visit(If n){return null;} // OK
 //	public LlvmValue visit(While n){return null;} // OK
 //	public LlvmValue visit(Assign n){return null;} // Falta testar
 //	public LlvmValue visit(ArrayAssign n){return null;} // Falta testar
 //	public LlvmValue visit(And n){return null;} // OK
-//	public LlvmValue visit(LessThan n){return null;} OK
-//	public LlvmValue visit(Equal n){return null;} OK
+//	public LlvmValue visit(LessThan n){return null;} // OK
+//	public LlvmValue visit(Equal n){return null;} // OK
 //	public LlvmValue visit(Minus n){return null;} // OK
 //	public LlvmValue visit(Times n){return null;} // OK
 //	public LlvmValue visit(ArrayLookup n){return null;} // Falta testar
