@@ -19,6 +19,6 @@ public class LlvmDefine extends LlvmInstruction{
 		arguments = arguments + ", ";
 	    
 	}
-	return "define " + resultType + " " + name + "(" + arguments + ") {";
+	return "\ndefine " + resultType + " " + name + "(" + arguments + ") {";
     }
 }
