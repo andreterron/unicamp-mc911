@@ -434,12 +434,16 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(NewArray n){
 	
 	   LlvmValue size = n.size.accept(this);
-	
-	   LlvmRegister reg = new LlvmRegister(new LlvmPointer(LlvmPrimitiveType.I32));
-	   	
-	   assembler.add(new LlvmAlloca(reg, new LlvmClassType("[" + size + " x " + LlvmPrimitiveType.I32 + "]"), new LinkedList<LlvmValue>()));
 
-	   return reg;
+	
+      LlvmRegister reg = new LlvmRegister(new LlvmPointer(LlvmPrimitiveType.I32));
+	   	
+	   assembler.add(new LlvmAlloca(reg, new LlvmInt("[" + size + " x " + LlvmPrimitiveType.I32 + "]"), new LinkedList<LlvmValue>()));
+// return reg;
+
+//	   assembler.add(new LlvmAlloca(reg, new LlvmArrayValue(n.size.accept(this), LlvmPrimitiveType.I32), new LinkedList<LlvmValue>()));
+//	   return new LlvmArrayValue(n.size.accept(this), LlvmPrimitiveType.I32);
+      return size
 	}
 		
 	public LlvmValue visit(Identifier n){
@@ -562,6 +566,30 @@ class MethodNode {
 
 }
 
+class LlvmInt extends LlvmType {
 
+	public String name;
+	
+	public LlvmInt(String n) {
+		name = n;
+	}
 
+	public String toString(){
+		return name;
+	}
+}
+
+class LlvmArrayValue extends LlvmValue{
+    public LlvmValue length;
+    public LlvmType content;
+    
+    public LlvmArrayValue(LlvmValue length, LlvmType content){
+	this.length = length;
+	this.content = content;
+    }
+
+    public String toString(){
+	return "[" + length + " x " + content + "]";
+    }
+}
 
