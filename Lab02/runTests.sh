@@ -24,6 +24,9 @@ do
   out=out/$filename.s
   RES=0
   make run INPUT=$f OUTPUT=$out >> output.txt 2>> error.txt &&
+  echo "----- Running test now -----" >> output.txt
+  echo "----- Running test now -----" >> error.txt
+  echo "----- Running test now -----"
   lli $out >> output.txt 2>> error.txt &&
   RES=1 && ((correct+=1))
   if [ $RES == 0 ]; then
