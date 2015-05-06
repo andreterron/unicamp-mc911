@@ -18,8 +18,8 @@ que auxiliam a geração de código em LLVM-IR. Quase todas
 as classes estão prontas; apenas as seguintes precisam ser 
 implementadas: 
 
-// llvmasm/LlvmBranch.java -> OK? Funciona no If
-// llvmasm/LlvmIcmp.java -> OK? Funciona no LessThan e Equal
+// llvmasm/LlvmBranch.java -> OK
+// llvmasm/LlvmIcmp.java -> OK
 // llvmasm/LlvmMinus.java -> OK
 // llvmasm/LlvmTimes.java -> OK
 
@@ -569,7 +569,7 @@ public class Codegen extends VisitorAdapter{
 		
 		assembler.add(new LlvmAlloca(reg, new LlvmArray(s, size.type), new LinkedList<LlvmValue>()));
       
-		return reg; // Ver se deve retornar size ou reg
+		return reg;
 	}
 
 	public LlvmValue visit(Identifier n){
@@ -597,7 +597,15 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(ArrayLength n){
 	   LlvmValue array = n.array.accept(this);
 	   
-	   return array;
+		String tipo = array.type.toString();
+		String init = "[\\[]+";
+   	String end = "[ ]+";
+      String[] tokens1 = tipo.split(init);
+      String[] tokens2 = tokens1[1].split(end);
+
+      LlvmValue size = new LlvmNamedValue(tokens2[0], LlvmPrimitiveType.I32);
+				
+	   return size;
 	}
 
 	// Todos os visit's que devem ser implementados	
