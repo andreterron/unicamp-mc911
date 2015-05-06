@@ -1,6 +1,6 @@
 
 if [ -z $1 ]; then
-  path=test/smaller/*
+  path=test/bigger/*
 else
   path=$1
 fi

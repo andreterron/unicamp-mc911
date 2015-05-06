@@ -6,7 +6,13 @@ public class LlvmClassDeclaration extends LlvmInstruction {
 
 	public LlvmClassType classType;
 	public LlvmClassType superClass = null;
+	public LlvmStructure structure;
 	public List<LlvmType> fieldTypes;
+	
+	public LlvmClassDeclaration(LlvmClassType type, LlvmStructure fieldList) {
+		classType = type;
+		structure = fieldList;
+	}
 	
 	public LlvmClassDeclaration(LlvmClassType type, List<LlvmType> fields) {
 		classType = type;
@@ -21,6 +27,11 @@ public class LlvmClassDeclaration extends LlvmInstruction {
 
 	public String toString(){
 		//%class.Conta = type { i32, i32 }
+		if (structure != null) {
+			String result = "\n" + classType + " = type " + structure.toString();
+			//result = 
+			return result;
+		}
 
 		//String f = StringUtils.join(fields, ", ");
 		String result = "\n" + classType + " = type { ";
