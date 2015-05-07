@@ -1,5 +1,7 @@
 
 if [ -z $1 ]; then
+  path=test/smaller/*
+elif [ "$1" == "-b" ]; then
   path=test/bigger/*
 else
   path=$1
@@ -26,7 +28,7 @@ do
   make run INPUT=$f OUTPUT=$out >> output.txt 2>> error.txt &&
   echo "----- Running test now -----" >> output.txt
   echo "----- Running test now -----" >> error.txt
-  echo "----- Running test now -----"
+  #echo "----- Running test now -----"
   lli $out >> output.txt 2>> error.txt &&
   RES=1 && ((correct+=1))
   if [ $RES == 0 ]; then

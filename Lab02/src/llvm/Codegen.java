@@ -394,7 +394,7 @@ public class Codegen extends VisitorAdapter{
 		
 		// Constructor
 		List<LlvmValue> args = new LinkedList<LlvmValue>();
-		args.add(new LlvmNamedValue("%this", new LlvmPointer(new LlvmClassType(n.name.s))));
+		args.add(new LlvmNamedValue("%this", new LlvmClassPointerType(new LlvmClassType(n.name.s))));
 		
 		assembler.add(new LlvmDefine("@__" + n.name, LlvmPrimitiveType.VOID, args));
 		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
@@ -439,9 +439,6 @@ public class Codegen extends VisitorAdapter{
 	public LlvmValue visit(VarDecl n) {
 		LlvmType typeVal = n.type.accept(this).type;
 		LlvmType type = typeVal;
-		if (typeVal instanceof LlvmClassType) {
-			type = new LlvmPointer(type);
-		}
 		LlvmNamedValue val = new LlvmNamedValue("%" + n.name.s, type);
 		
 		
@@ -460,7 +457,7 @@ public class Codegen extends VisitorAdapter{
 		LlvmType resultType = retType;
 		Map<String, LlvmValue> locals = new HashMap();
 		List<LlvmValue> formals = new LinkedList<LlvmValue>();
-		formals.add(new LlvmNamedValue("%this", new LlvmPointer(new LlvmClassType(classEnv.name))));
+		formals.add(new LlvmNamedValue("%this", new LlvmPointer(classEnv)));
 		for (util.List<Formal> c = n.formals; c != null; c = c.tail) {
 			LlvmValue var = c.head.accept(this);
 			if (var.type instanceof LlvmClassType) {
@@ -471,22 +468,26 @@ public class Codegen extends VisitorAdapter{
 			//locals.put(c.head.name.s, var);
 		}
 		if (resultType instanceof LlvmClassType) {
-			resultType = new LlvmPointer(resultType);
+			//resultType = new LlvmPointer(resultType);
 		}
 		assembler.add(new LlvmDefine("@__" + n.name.s + "_" + classEnv.name, resultType, formals));
 		assembler.add(new LlvmLabel(new LlvmLabelValue("entry")));
 		
 		LlvmValue reg;
+		int isThis = 0;
 		for (LlvmValue formal : formals) {
 			//System.out.println("Method 2; var name = " + formal.toString());
 			LlvmType type = formal.type;
 			//if (type instanceof LlvmClassType) {
 			//	type = new LlvmPointer(type);
 			//}
-			reg = new LlvmRegister(new LlvmPointer(type));
-			assembler.add(new LlvmAlloca(reg, type, new LinkedList<LlvmValue>()));
-			assembler.add(new LlvmStore(formal, reg));
-			locals.put(formal.toString(), reg);
+			
+			if (isThis++ > 0) {
+				reg = new LlvmRegister(formal.toString() + "_addr", new LlvmPointer(type));
+				assembler.add(new LlvmAlloca(reg, type, new LinkedList<LlvmValue>()));
+				assembler.add(new LlvmStore(formal, reg));
+				locals.put(formal.toString(), reg);
+			}
 		}
 		
 		methodEnv = new MethodNode(n.name.s, locals);
@@ -496,7 +497,7 @@ public class Codegen extends VisitorAdapter{
 			LlvmValue local = c.head.accept(this);
 			LlvmType type = local.type;
 			if (type instanceof LlvmClassType) {
-				type = new LlvmPointer(type);
+				//type = new LlvmPointer(type);
 			}
 			reg = new LlvmRegister(type);
 			assembler.add(new LlvmAlloca(reg, type, new LinkedList<LlvmValue>()));
@@ -520,10 +521,9 @@ public class Codegen extends VisitorAdapter{
 			ClassNode sClass = (cNode.superClass == null ? null : symTab.classes.get(cNode.superClass));
 			int i = 0;
 			while (cNode != null) {
-				if (retType.toString().equals(cNode.toString())) {
+				if (retType.toString().equals(new LlvmPointer(cNode).toString())) {
 					break;
 				} else {
-				
 					vVar = new LlvmRegister(new LlvmPointer(sClass));
 					assembler.add(new LlvmGetElementPointer(vVar, v, offsets));
 					v = vVar;
@@ -567,7 +567,7 @@ public class Codegen extends VisitorAdapter{
 	}
 	
 	public LlvmValue visit(IdentifierType n){
-		return new LlvmNamedValue(n.name, new LlvmClassType(n.name));
+		return new LlvmNamedValue(n.name, new LlvmClassPointerType(new LlvmClassType(n.name)));
 	}	
 	
 	public LlvmValue visit(IdentifierExp n){
@@ -587,11 +587,13 @@ public class Codegen extends VisitorAdapter{
 				//c.head.accept(this);
 				//if (local.toString().equals(localName)) 
 				LlvmType type = local.type;
-				if (type instanceof LlvmClassType) {
-					type = new LlvmPointer(type);
+				LlvmType regType = type;
+				if (type instanceof LlvmPointer) {
+					regType = ((LlvmPointer) type).content;
+					//type = new LlvmPointer(type);
 					//reg = local;
 				} //else {
-				reg = new LlvmRegister(type);
+				reg = new LlvmRegister(regType);
 				assembler.add(new LlvmLoad(reg, new LlvmNamedValue(local.toString(), type)));
 				//}
 					//return new LlvmNamedValue(n.name.s, type);
@@ -726,7 +728,7 @@ public class Codegen extends VisitorAdapter{
 		LlvmRegister reg = new LlvmRegister(new LlvmPointer(new LlvmClassType(n.className.s)));
 		args.add(reg);
 		LlvmRegister reg2 = new LlvmRegister(new LlvmPointer(new LlvmClassType(n.className.s)));
-		assembler.add(new LlvmAlloca(reg, n.type.accept(this).type, new LinkedList<LlvmValue>()));
+		assembler.add(new LlvmAlloca(reg, new LlvmClassType(n.className.s), new LinkedList<LlvmValue>()));
 		assembler.add(new LlvmCall(
 				reg2,
 				LlvmPrimitiveType.VOID,
@@ -892,7 +894,7 @@ class SymTab extends VisitorAdapter{
 		LlvmType typeVal = n.type.accept(this).type;
 		LlvmType type = typeVal;
 		if (typeVal instanceof LlvmClassType) {
-			type = new LlvmPointer(type);
+			//type = new LlvmPointer(type);
 		}
 		LlvmNamedValue val = new LlvmNamedValue(n.name.s, type);
 		
@@ -924,7 +926,7 @@ class SymTab extends VisitorAdapter{
 			locals.put(var.toString(), var);
 		}
 		if (resultType instanceof LlvmClassType) {
-			resultType = new LlvmPointer(resultType);
+			//resultType = new LlvmPointer(resultType);
 		}
 		
 		
@@ -952,7 +954,7 @@ class SymTab extends VisitorAdapter{
 	}
 	
 	public LlvmValue visit(IdentifierType n){
-		return new LlvmNamedValue(n.name, new LlvmClassType(n.name));
+		return new LlvmNamedValue(n.name, new LlvmClassPointerType(new LlvmClassType(n.name)));
 	}
 }
 
@@ -1032,3 +1034,17 @@ class LlvmArrayValue extends LlvmValue{
     }
 }
 
+class LlvmClassPointerType extends LlvmPointer {
+	public LlvmClassType classType;
+	
+	public LlvmClassPointerType(String name) {
+		super(new LlvmClassType(name));
+		classType = new LlvmClassType(name);
+	}
+	
+	public LlvmClassPointerType(LlvmClassType c) {
+		super(c);
+		classType = c;
+	}
+	
+}
