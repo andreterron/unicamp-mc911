@@ -173,11 +173,14 @@ public class Codegen extends VisitorAdapter{
 		int line = n.line;
 		LlvmValue cmp = n.condition.accept(this);
 		LlvmLabelValue trueLabel = new LlvmLabelValue("true" + line);
-		//LlvmLabelValue elseLabel = new LlvmLabelValue("else" + line);
+		LlvmLabelValue elseLabel = new LlvmLabelValue("else" + line);
 		LlvmLabelValue endLabel = new LlvmLabelValue("end" + line);
-		assembler.add(new LlvmBranch(cmp, trueLabel, endLabel));
+		assembler.add(new LlvmBranch(cmp, trueLabel, elseLabel));
 		assembler.add(new LlvmLabel(trueLabel));
 		n.thenClause.accept(this);
+		assembler.add(new LlvmBranch(null, endLabel, null));
+		assembler.add(new LlvmLabel(elseLabel));
+		n.elseClause.accept(this);
 		assembler.add(new LlvmBranch(null, endLabel, null));
 		assembler.add(new LlvmLabel(endLabel));
 		//n.elseClause.accept(this);
@@ -443,7 +446,7 @@ public class Codegen extends VisitorAdapter{
 		
 		
 		if (methodEnv != null) {
-			assembler.add(new LlvmAlloca(val, type, new LinkedList<LlvmValue>()));
+			//assembler.add(new LlvmAlloca(val, type, new LinkedList<LlvmValue>()));
 		}
 		//assembler.add(
 		return val;
@@ -499,7 +502,7 @@ public class Codegen extends VisitorAdapter{
 			if (type instanceof LlvmClassType) {
 				//type = new LlvmPointer(type);
 			}
-			reg = new LlvmRegister(type);
+			reg = new LlvmRegister(local.toString(), new LlvmPointer(type));
 			assembler.add(new LlvmAlloca(reg, type, new LinkedList<LlvmValue>()));
 			locals.put(local.toString(), reg);
 		}
@@ -590,8 +593,6 @@ public class Codegen extends VisitorAdapter{
 				LlvmType regType = type;
 				if (type instanceof LlvmPointer) {
 					regType = ((LlvmPointer) type).content;
-					//type = new LlvmPointer(type);
-					//reg = local;
 				} //else {
 				reg = new LlvmRegister(regType);
 				assembler.add(new LlvmLoad(reg, new LlvmNamedValue(local.toString(), type)));
@@ -613,13 +614,11 @@ public class Codegen extends VisitorAdapter{
 					offsets.add(new LlvmNamedValue("0", LlvmPrimitiveType.I32));
 					offsets.add(new LlvmNamedValue("" + i, LlvmPrimitiveType.I32));
 					LlvmType type = var.type;
-					if (type instanceof LlvmClassType) {
-						//type = new LlvmPointer(type);
-					}
+					reg = new LlvmRegister(type);
 					
 					LlvmRegister ptr = new LlvmRegister(new LlvmPointer(type));
 					assembler.add(new LlvmGetElementPointer(ptr, thisVar, offsets));
-					reg = new LlvmRegister(type);
+					//reg = new LlvmRegister(type);
 					assembler.add(new LlvmLoad(reg, ptr));
 					break;
 					//return reg;
@@ -685,8 +684,8 @@ public class Codegen extends VisitorAdapter{
 		//System.out.println("Call 4;");
 		
 		actuals.add(obj);
-		for (; n.actuals != null; n.actuals = n.actuals.tail) {
-			actuals.add(n.actuals.head.accept(this));
+		for (util.List<Exp> actual = n.actuals; actual != null; actual = actual.tail) {
+			actuals.add(actual.head.accept(this));
 		}
 		
 		//System.out.println("Call 5;");
