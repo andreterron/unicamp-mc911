@@ -1,4 +1,3 @@
 *.o
-*.c
-*.h
 *.kate-swp
+.DS_Store

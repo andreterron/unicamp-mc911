@@ -4,3 +4,5 @@ teste.s
 error.txt
 output.txt
 out/
+*.c
+*.h

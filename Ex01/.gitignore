@@ -1,1 +1,3 @@
 parsersql
+*.c
+*.h

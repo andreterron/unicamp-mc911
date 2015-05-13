@@ -1,2 +1,4 @@
 parser
 out.html
+*.c
+*.h
