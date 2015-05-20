@@ -75,11 +75,11 @@ void Liveness::computeIInOut(Function &F) {
   errs() << "IN3" << '\n';
   
   LivenessInfo *s;
-  set in2, out2;
+  std::set<const Value *> in2, out2;
   int changed;
   
   for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
-    s = &*bbLivenessMap.find(&*b);
+    s = &((&*bbLivenessMap.find(&*b))->second);
     s->in.clear();
     s->out.clear();
   }
@@ -87,7 +87,7 @@ void Liveness::computeIInOut(Function &F) {
     changed = 0;
     // This for is going backwards
     for (Function::iterator b = F.end(), e = F.begin(); b != e; --b) {
-      s = &*bbLivenessMap.find(&*b);
+      s = &((&*bbLivenessMap.find(&*b))->second);
       in2 = s->in;
       out2 = s->out;
       
