@@ -1,6 +1,8 @@
 LLVM_CONFIG?=llvm-config
 CXX=g++
 
+NAME=BinaryTree
+
 SRC_DIR=./p3
 PASS_SO=Release/P3.so
 
@@ -23,6 +25,9 @@ CPP_OPTIONS+=$(CPPFLAGS) $(shell $(LLVM_CONFIG) --cppflags) \
 LD_OPTIONS+=$(LDFLAGS) $(shell $(LLVM_CONFIG) --ldflags)
 
 default: $(PASS_SO)
+
+test: default
+	opt -S -load Release/P3.so -liveness dce-tests/minijava/$(NAME).ll > dce-tests/output/$(NAME).opt.ll
 
 $(SRC_DIR)/%.o : %.cpp
 	@echo Compiling $*.cpp for `$(LLVM_CONFIG) --build-mode` build
