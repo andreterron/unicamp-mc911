@@ -20,6 +20,10 @@ errs() << "IN1" << '\n';
 
    for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
    
+      // TODO : Criar um liveness para cada bloco
+      // LivenessInfo info;
+      // bbLivenessMap.insert(make_pair(b, info));
+      // s = &((&*bbLivenessMap.find(&*b))->second);
       LivenessInfo s;
       for (BasicBlock::iterator i = b->begin(), e = b->end(); i != e; ++i) {
 
