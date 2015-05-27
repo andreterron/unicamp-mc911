@@ -153,10 +153,7 @@ void Liveness::computeIInOut(Function &F) {
       nextInfo = info;
     } while (i != ie);
   } while (b != e);
-<<<<<<< HEAD
-=======
   //printInAndOut(F);
->>>>>>> 51c763d... DCE Liveness
 }
 
 void Liveness::printValueSet(std::set<const Value *> *s) {
