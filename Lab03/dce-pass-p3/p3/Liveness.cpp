@@ -25,15 +25,16 @@ errs() << "IN1" << '\n';
       // bbLivenessMap.insert(make_pair(b, info));
       // s = &((&*bbLivenessMap.find(&*b))->second);
       LivenessInfo s;
+      
       for (BasicBlock::iterator i = b->begin(), e = b->end(); i != e; ++i) {
 
          errs() << "INS:" << *i << '\n';
          
+         s.def.insert(i);
+         
          for (Instruction::op_iterator o = i->op_begin(), oe = i->op_end(); o != oe; ++o) {
             Value *v = *o;
-            /*if(isa<Instruction>(*v) || isa<Argument>(*v)){
-              errs() << "\tOPE:" << *v << '\n';
-            }*/
+            
             if(isa<Instruction>(*v)){
                 errs() << "\tOPE-I:" << *v << '\n';
                 s.use.insert(v);
@@ -41,26 +42,12 @@ errs() << "IN1" << '\n';
             
             else if(isa<Argument>(*v)){
               errs() << "\tOPE-A:" << *v << '\n';
+               s.use.insert(v);
             }
          }
       }
-          
-/* GEN
-          unsigned n = i->getNumOperands();
-          for (unsigned j = 0; j < n; j++) {
-            Value *v = i->getOperand(j);
-            if (isa<Instruction>(v)) {
-              Instruction *op = cast<Instruction>(v);
-              if (!s.kill.count(op))
-                s.gen.insert(op);
-            }
-          }
-          // KILL
-          s.kill.insert(&*i);
 
-      }
-      bbMap.insert(std::make_pair(&*b, s));
-*/
+      bbLivenessMap.insert(std::make_pair(&*b, s));
 
    }
 }
@@ -78,7 +65,7 @@ errs() << "IN2" << '\n';
 void Liveness::computeIInOut(Function &F) {
   errs() << "IN3" << '\n';
   
-  LivenessInfo *s;
+/*  LivenessInfo *s;
   std::set<const Value *> in2, out2;
   int changed;
   
@@ -103,7 +90,7 @@ void Liveness::computeIInOut(Function &F) {
         changed++;
       }
     }
-  } while (changed);
+  } while (changed);*/
 }
 
 bool Liveness::runOnFunction(Function &F) {
