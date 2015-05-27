@@ -53,44 +53,62 @@ errs() << "IN1" << '\n';
 }
 
 void Liveness::computeBBInOut(Function &F){
-errs() << "IN2" << '\n';
+  errs() << "IN2" << '\n';
+  
+  LivenessInfo *info, *sInfo;
+  std::set<const Value *> in2, out2, diff;
+  //std::set<const Value *>::iterator it;
+  int changed;
+  
+  for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
+    info = &((&*bbLivenessMap.find(&*b))->second);
+    info->in.clear();
+    info->out.clear();
+  }
+  do {
+    changed = 0;
+    // This for is going backwards
+    for (Function::iterator b = F.end(), e = F.begin(); b != e; --b) {
+      info = &((&*bbLivenessMap.find(&*b))->second);
+      in2 = info->in;
+      out2 = info->out;
+      diff.clear();
+      
+      // TODO : do something
+      
+      // out[n] = U(s in succ[n]) in[s]
+      info->out.clear();
+      for (Function::iterator s = F.end(); b != s; --s) {
+        sInfo = &((&*bbLivenessMap.find(&*s))->second);
+        info->out.insert(sInfo->in.begin(), sInfo->in.end());
+      }
+      
+      // in[n] = use[n] U (out[n] - def[n])
+      info->in.clear();
+      info->in.insert(info->use.begin(), info->use.end());
+      set_difference(info->out.begin(),
+                               info->out.end(),
+                               info->def.begin(),
+                               info->def.end(),
+                               std::inserter(diff, diff.end()));
+      //diff.resize(it - diff.begin());
+      info->in.insert(diff.begin(), diff.end());
+      
+      if (in2 != info->in || out2 != info->out) {
+        changed++;
+      }
+    }
+  } while (changed);
+}
+
+void Liveness::computeIInOut(Function &F) {
+  errs() << "IN3" << '\n';
   for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
 
     LivenessInfo s;
     for (BasicBlock::iterator i = b->begin(), e = b->end(); i != e; ++i) {
     }
   }
-}
-
-void Liveness::computeIInOut(Function &F) {
-  errs() << "IN3" << '\n';
-  
-/*  LivenessInfo *s;
-  std::set<const Value *> in2, out2;
-  int changed;
-  
-  for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
-    s = &((&*bbLivenessMap.find(&*b))->second);
-    s->in.clear();
-    s->out.clear();
-  }
-  do {
-    changed = 0;
-    // This for is going backwards
-    for (Function::iterator b = F.end(), e = F.begin(); b != e; --b) {
-      s = &((&*bbLivenessMap.find(&*b))->second);
-      in2 = s->in;
-      out2 = s->out;
-      
-      // TODO : do something
-      // in[n] = use[n] U (out[n] - def[n])
-      // out[n] = U(s in succ[n]) in[s]
-      
-      if (in2 != s->in || out2 != s->out) {
-        changed++;
-      }
-    }
-  } while (changed);*/
 }
 
 bool Liveness::runOnFunction(Function &F) {
