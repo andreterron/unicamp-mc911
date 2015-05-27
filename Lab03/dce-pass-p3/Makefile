@@ -30,7 +30,10 @@ test: default
 	opt -S -load Release/P3.so -liveness dce-tests/minijava/$(NAME).ll > dce-tests/output/$(NAME).opt.ll
 
 testLive: default
-	opt -S -load Release/P3.so -DCELive dce-tests/minijava/$(NAME).ll > dce-tests/output/$(NAME).opt.ll
+	opt -S -load Release/P3.so -DCELive dce-tests/minijava/$(NAME).ll > dce-tests/output/liveness/$(NAME).opt.ll
+
+testDefUse: default
+	opt -S -load Release/P3.so -DCEDefUse dce-tests/minijava/$(NAME).ll > dce-tests/output/defuse/$(NAME).opt.ll
 
 $(SRC_DIR)/%.o : %.cpp
 	@echo Compiling $*.cpp for `$(LLVM_CONFIG) --build-mode` build
