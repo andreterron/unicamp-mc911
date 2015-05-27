@@ -1,4 +1,5 @@
 #include "Liveness.h"
+#include <llvm/IR/IntrinsicInst.h>
 using namespace llvm;
 namespace {
    struct DCE : public FunctionPass {
@@ -6,8 +7,33 @@ namespace {
     	DCE() : FunctionPass(ID) {}
 
     	virtual bool runOnFunction(Function &F) {
-        // Liveness &L = getAnalysis<Liveness>();
-
+          errs() << "DCE LIVENESS\n";
+          int changed;
+          bool isAlive, liveOut;
+          Liveness &L = getAnalysis<Liveness>();
+          do {
+            changed = 0;
+            for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
+              for (BasicBlock::iterator i = b->begin(), ie = b->end(); i != ie; ++i) {
+                L.runOnFunction(F);
+                liveOut = L.isLiveOut(&*i, &*i);
+                isAlive = (i->mayHaveSideEffects() ||
+                    isa<TerminatorInst>(&*i) ||
+                    isa<DbgInfoIntrinsic>(&*i) ||
+                    isa<LandingPadInst>(&*i) ||
+                    liveOut);
+                errs() << "INS:" << *i << '\n';
+                errs() << "\tlive = " << isAlive << '\n';
+                errs() << "\tlout = " << liveOut << '\n';
+                if (!isAlive) {
+                  Instruction *dead = &*i;
+                  i--;
+                  dead->eraseFromParent();
+                  changed = true;
+                }
+              }
+            }
+          } while (changed);
         //...
 
 
@@ -15,7 +41,7 @@ namespace {
       }
 
     	virtual void getAnalysisUsage(AnalysisUsage &AU) const {
-         //AU.addRequired<Liveness>();
+           AU.addRequired<Liveness>();
 		   return;
     	}
    };

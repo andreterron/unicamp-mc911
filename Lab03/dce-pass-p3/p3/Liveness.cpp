@@ -17,8 +17,6 @@ bool Liveness::isLiveOut(Instruction *I, Value *V){
 
 void Liveness::computeBBDefUse(Function &F){
 
-errs() << "IN1" << '\n';
-
    for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
    
       // TODO : Criar um liveness para cada bloco
@@ -27,11 +25,10 @@ errs() << "IN1" << '\n';
       // bbInfo = &((&*bbLivenessMap.find(&*b))->second);
       LivenessInfo bbInfo;
       
-      for (BasicBlock::iterator i = b->begin(), e = b->end(); i != e; ++i) {
+      for (BasicBlock::iterator i = b->begin(), ie = b->end(); i != ie; ++i) {
 
          LivenessInfo iInfo;
         
-         errs() << "INS:" << *i << '\n';
          
          bbInfo.def.insert(i);
          iInfo.def.insert(i);
@@ -40,13 +37,11 @@ errs() << "IN1" << '\n';
             Value *v = *o;
             
             if(isa<Instruction>(*v)){
-                errs() << "\tOPE-I:" << *v << '\n';
                 bbInfo.use.insert(v);
                 iInfo.use.insert(v);
             }
             
             else if(isa<Argument>(*v)){
-              errs() << "\tOPE-A:" << *v << '\n';
                bbInfo.use.insert(v);
                iInfo.use.insert(v);
             }
@@ -112,12 +107,6 @@ void Liveness::computeBBInOut(Function &F){
 }
 
 void Liveness::computeIInOut(Function &F) {
-  for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
-
-    LivenessInfo s;
-    for (BasicBlock::iterator i = b->begin(), e = b->end(); i != e; ++i) {
-    }
-  }
   LivenessInfo *info, *bInfo, *nextInfo = NULL;
   std::set<const Value *> in2, out2, diff;
   //std::set<const Value *>::iterator it;
@@ -164,7 +153,7 @@ void Liveness::computeIInOut(Function &F) {
       nextInfo = info;
     } while (i != ie);
   } while (b != e);
-  printInAndOut(F);
+  //printInAndOut(F);
 }
 
 void Liveness::printValueSet(std::set<const Value *> *s) {
