@@ -47,6 +47,7 @@ public:
     void computeIInOut(Function &F);
 
     bool isLiveOut(Instruction *I, Value *V);
+    bool isUsed(Instruction *I);
     void addToMap(Function &F);
 
 	virtual void getAnalysisUsage(AnalysisUsage &AU) const{

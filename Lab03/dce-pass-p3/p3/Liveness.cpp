@@ -15,30 +15,59 @@ bool Liveness::isLiveOut(Instruction *I, Value *V){
     return (info->out.find(V) != info->out.end());
 }
 
+bool Liveness::isUsed(Instruction *I){
+    int* countUse = &((&*instMap.find(I)))->second;
+    if(*countUse > 0) {
+      return true;
+    }
+    return false;
+}
+
 void Liveness::computeBBDefUse(Function &F){
+
+   int* countUse;
+
+   for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
+      for (BasicBlock::iterator i = b->begin(), ie = b->end(); i != ie; ++i) {
+        Instruction *inst = dyn_cast<Instruction>(i);
+        instMap.insert(std::make_pair(&*inst, 0));
+      }
+   }
+   
+   for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
+      for (BasicBlock::iterator i = b->begin(), ie = b->end(); i != ie; ++i) {
+         Instruction *inst = dyn_cast<Instruction>(i);
+         countUse = &((&*instMap.find(inst)))->second;
+         *countUse = 0;
+      }
+   }
+
 
    for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
    
-      // TODO : Criar um liveness para cada bloco
-      // LivenessInfo info;
-      // bbLivenessMap.insert(make_pair(b, info));
-      // bbInfo = &((&*bbLivenessMap.find(&*b))->second);
       LivenessInfo bbInfo;
+
       
       for (BasicBlock::iterator i = b->begin(), ie = b->end(); i != ie; ++i) {
 
          LivenessInfo iInfo;
-        
+
          
          bbInfo.def.insert(i);
          iInfo.def.insert(i);
          
          for (Instruction::op_iterator o = i->op_begin(), oe = i->op_end(); o != oe; ++o) {
             Value *v = *o;
+            Instruction *inst = dyn_cast<Instruction>(v);
             
             if(isa<Instruction>(*v)){
                 bbInfo.use.insert(v);
                 iInfo.use.insert(v);
+                countUse = &((&*instMap.find(inst)))->second;
+//                errs() << "\tPior used = " << *countUse << '\n';
+                *countUse = *countUse + 1;
+//                errs() << "INS:" << *inst << '\n';
+//                errs() << "\tUpdate used = " << *countUse << '\n';
             }
             
             else if(isa<Argument>(*v)){
@@ -185,7 +214,6 @@ void Liveness::printInAndOut(Function &F) {
 
 
 bool Liveness::runOnFunction(Function &F) {
-errs() << "IN0" << '\n';
     computeBBDefUse(F);
     computeBBInOut(F);
     computeIInOut(F);

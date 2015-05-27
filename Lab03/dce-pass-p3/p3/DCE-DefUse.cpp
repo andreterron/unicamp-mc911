@@ -7,24 +7,24 @@ namespace {
     	DCE() : FunctionPass(ID) {}
 
     	virtual bool runOnFunction(Function &F) {
-          errs() << "DCE LIVENESS\n";
+          errs() << "DCE DEF USE\n";
           int changed;
-          bool isAlive, liveOut;
+          bool isAlive, isUsed;
           Liveness &L = getAnalysis<Liveness>();
           do {
             changed = 0;
             for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
               for (BasicBlock::iterator i = b->begin(), ie = b->end(); i != ie; ++i) {
                 L.runOnFunction(F);
-                liveOut = L.isLiveOut(&*i, &*i);
+                isUsed = L.isUsed(&*i);
                 isAlive = (i->mayHaveSideEffects() ||
                     isa<TerminatorInst>(&*i) ||
                     isa<DbgInfoIntrinsic>(&*i) ||
                     isa<LandingPadInst>(&*i) ||
-                    liveOut);
+                    isUsed);
                 errs() << "INS:" << *i << '\n';
                 errs() << "\tlive = " << isAlive << '\n';
-                errs() << "\tlout = " << liveOut << '\n';
+                errs() << "\tused = " << isUsed << '\n';
                 if (!isAlive) {
                   Instruction *dead = &*i;
                   i--;
@@ -47,5 +47,5 @@ namespace {
 
 char DCE::ID = 0;
 
-RegisterPass<DCE> X("DCELive", "DCELive", false, false);
+RegisterPass<DCE> X("DCEDefUse", "DCEDefUse", false, false);
 
