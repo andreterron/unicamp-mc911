@@ -14,11 +14,7 @@ namespace {
           do {
             changed = 0;
             for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
-              for (BasicBlock::iterator i = b->begin(), ie = b->end(); i != ie; ++i) {
-                if(pulo) {
-                  i--;
-                  pulo = false;
-                }
+              for (BasicBlock::iterator i = b->begin(), ie = b->end(); i != ie;) {
                 L.runOnFunction(F);
                 isUsed = L.isUsed(&*i);
                 isAlive = (i->mayHaveSideEffects() ||
@@ -29,13 +25,12 @@ namespace {
                 errs() << "INS:" << *i << '\n';
                 errs() << "\tlive = " << isAlive << '\n';
                 errs() << "\tused = " << isUsed << '\n';
+                Instruction *current = &*i;
+                i++;
                 if (!isAlive) {
-                  Instruction *dead = &*i;
-                  i++;
-                  dead->eraseFromParent();
+                  current->eraseFromParent();
                   changed = true;
-                  pulo = true;
-                }                
+                }               
               }
             }
           } while (changed);
