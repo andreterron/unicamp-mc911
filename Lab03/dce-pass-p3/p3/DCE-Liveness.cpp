@@ -7,7 +7,6 @@ namespace {
     	DCE() : FunctionPass(ID) {}
 
     	virtual bool runOnFunction(Function &F) {
-          errs() << "DCE LIVENESS\n";
           int changed;
           bool isAlive, liveOut, pulo = false;
           Liveness &L = getAnalysis<Liveness>();
@@ -22,9 +21,6 @@ namespace {
                     isa<DbgInfoIntrinsic>(&*i) ||
                     isa<LandingPadInst>(&*i) ||
                     liveOut);
-                errs() << "INS:" << *i << '\n';
-                errs() << "\tlive = " << isAlive << '\n';
-                errs() << "\tlout = " << liveOut << '\n';
                 Instruction *current = &*i;
                 i++;
                 if (!isAlive) {
