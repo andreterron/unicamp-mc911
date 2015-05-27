@@ -6,8 +6,8 @@ namespace {
     	DCE() : FunctionPass(ID) {}
 
     	virtual bool runOnFunction(Function &F) {
-        // Liveness &L = getAnalysis<Liveness>();
-
+        Liveness &L = getAnalysis<Liveness>();
+        L.is
         //...
 
 
@@ -15,7 +15,7 @@ namespace {
       }
 
     	virtual void getAnalysisUsage(AnalysisUsage &AU) const {
-         //AU.addRequired<Liveness>();
+         AU.addRequired<Liveness>();
 		   return;
     	}
    };

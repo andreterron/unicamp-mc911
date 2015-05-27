@@ -164,7 +164,6 @@ void Liveness::computeIInOut(Function &F) {
       nextInfo = info;
     } while (i != ie);
   } while (b != e);
-  printInAndOut(F);
 }
 
 void Liveness::printValueSet(std::set<const Value *> *s) {
@@ -191,6 +190,7 @@ void Liveness::printInAndOut(Function &F) {
     }
     errs() << "END BLOCK\n";
   }
+
 }
 
 
