@@ -53,7 +53,9 @@ public:
 		AU.setPreservesAll();
 	}
 
+void printValueSet(std::set<const Value *> *s);
 
+void printInAndOut(Function &F);
 
 };
 

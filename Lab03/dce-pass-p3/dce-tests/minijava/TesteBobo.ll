@@ -10,10 +10,6 @@ label1:
   %c2 = add i32 %b, %c
   %a2 = mul i32 %b, 2
   
-  %a3 = add i1 0, 0
-  br i1 %a3, label %label1, label %cont1
- 
-cont1:
   ret i32 %c2
 
 }
