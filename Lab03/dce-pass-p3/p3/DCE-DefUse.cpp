@@ -8,7 +8,7 @@ namespace {
 
     	virtual bool runOnFunction(Function &F) {
           int changed;
-          bool isAlive, isUsed, pulo = false;
+          bool isAlive, isUsed;
           Liveness &L = getAnalysis<Liveness>();
           do {
             changed = 0;
