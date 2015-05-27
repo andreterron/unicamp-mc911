@@ -9,12 +9,16 @@ namespace {
     	virtual bool runOnFunction(Function &F) {
           errs() << "DCE DEF USE\n";
           int changed;
-          bool isAlive, isUsed;
+          bool isAlive, isUsed, pulo = false;
           Liveness &L = getAnalysis<Liveness>();
           do {
             changed = 0;
             for (Function::iterator b = F.begin(), e = F.end(); b != e; ++b) {
               for (BasicBlock::iterator i = b->begin(), ie = b->end(); i != ie; ++i) {
+                if(pulo) {
+                  i--;
+                  pulo = false;
+                }
                 L.runOnFunction(F);
                 isUsed = L.isUsed(&*i);
                 isAlive = (i->mayHaveSideEffects() ||
@@ -27,10 +31,11 @@ namespace {
                 errs() << "\tused = " << isUsed << '\n';
                 if (!isAlive) {
                   Instruction *dead = &*i;
-                  i--;
+                  i++;
                   dead->eraseFromParent();
                   changed = true;
-                }
+                  pulo = true;
+                }                
               }
             }
           } while (changed);
