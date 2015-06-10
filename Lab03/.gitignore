@@ -3,3 +3,4 @@ dce-pass-p3/Release/P3.so
 dce-pass-p3/output.txt
 dce-pass-p3/error.txt
 dce-pass-p3/diff.txt
+dce-pass-p3/dce-tests/spec/gcc/out-dce.bc

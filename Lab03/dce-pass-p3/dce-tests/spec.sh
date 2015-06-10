@@ -6,11 +6,11 @@
 # 3. Executa
 # 4. Compara a saída do código otimizado com a golden
 
-OPT=opt-3.6
-LLC=llc-3.6
+OPT=opt
+LLC=llc
 CC=g++
 DIFF=diff
-OPTLIB=../dce-pass-full/Release/P3.so
+OPTLIB=../Release/P3.so
 
 base=$PWD
 
