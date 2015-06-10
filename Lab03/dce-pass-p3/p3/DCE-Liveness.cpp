@@ -43,5 +43,5 @@ namespace {
 
 char DCE::ID = 0;
 
-RegisterPass<DCE> X("DCELive", "DCELive", false, false);
+RegisterPass<DCE> X("dce-liveness", "dce-liveness", false, false);
 

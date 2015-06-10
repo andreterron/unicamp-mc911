@@ -105,9 +105,7 @@ void Liveness::computeBBInOut(Function &F){
       in2 = info->in;
       out2 = info->out;
       diff.clear();
-      
-      // TODO : do something
-      
+           
       // out[n] = U(s in succ[n]) in[s]
       info->out.clear();
       for (llvm::succ_iterator s = succ_begin(b), se = succ_end(b); se != s; s++) {

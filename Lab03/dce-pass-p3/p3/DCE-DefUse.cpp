@@ -43,5 +43,5 @@ namespace {
 
 char DCE::ID = 0;
 
-RegisterPass<DCE> X("DCEDefUse", "DCEDefUse", false, false);
+RegisterPass<DCE> X("dce-ssa", "dce-ssa", false, false);
 
